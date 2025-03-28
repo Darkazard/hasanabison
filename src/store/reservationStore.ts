@@ -24,7 +24,7 @@ interface Step3Data {
   flightNumber: string
   pickupTime: string
   paymentMethod: string
-  notes?: string
+  notes: string
 }
 
 interface PersonalInfo {
@@ -55,7 +55,7 @@ export const useReservationStore = create<ReservationStore>()((set) => ({
   currentStep: 1,
   setStep1Data: (data) => set({ step1Data: data }),
   setStep2Data: (data) => set({ step2Data: data }),
-  setStep3Data: (data) => set({ step3Data: data }),
+  setStep3Data: (data) => set({ step3Data: { ...data, notes: data.notes || '' } }),
   setPersonalInfo: (data) => set({ personalInfo: data }),
   setCurrentStep: (step) => set({ currentStep: step }),
   resetStore: () => set({ step1Data: null, step2Data: null, step3Data: null, personalInfo: null, currentStep: 1 }),
