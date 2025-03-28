@@ -35,7 +35,7 @@ interface PersonalInfo {
 
 export default function Step3Page() {
   const router = useRouter()
-  const t = translations.en
+  const t = translations.tr
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null)
   const [step2Data, setStep2Data] = useState<Step2Data | null>(null)
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
@@ -81,35 +81,35 @@ export default function Step3Page() {
 
     // Hata yoksa devam et
     if (Object.keys(newErrors).length === 0) {
-      const message = `*New Transfer Reservation*%0A
+      const message = `*Yeni Transfer Rezervasyonu*%0A
 ----------------------------------------%0A
-*Personal Information*%0A
-First Name: ${personalInfo.firstName}%0A
-Last Name: ${personalInfo.lastName}%0A
-Phone: ${personalInfo.phone || 'Not provided'}%0A
+*Kişisel Bilgiler*%0A
+Ad: ${personalInfo.firstName}%0A
+Soyad: ${personalInfo.lastName}%0A
+Telefon: ${personalInfo.phone || 'Belirtilmedi'}%0A
 ----------------------------------------%0A
-*Flight Information*%0A
-Flight Date: ${personalInfo.meetingDate}%0A
-Flight Time: ${personalInfo.meetingTime}%0A
-Flight Number: ${personalInfo.pickupAddress}%0A
-Destination: ${personalInfo.dropoffAddress}%0A
+*Uçuş Bilgileri*%0A
+Uçuş Tarihi: ${personalInfo.meetingDate}%0A
+Uçuş Saati: ${personalInfo.meetingTime}%0A
+Uçuş Numarası: ${personalInfo.pickupAddress}%0A
+Yön: ${personalInfo.dropoffAddress}%0A
 ----------------------------------------%0A
-*Transfer Details*%0A
-From: ${step1Data.pickupLocation}%0A
-To: ${step1Data.dropoffLocation}%0A
-Passengers: ${step1Data.adults + step1Data.children} people%0A
-Transfer Price: ${step2Data.transferPrice}$%0A
+*Transfer Detayları*%0A
+Nereden: ${step1Data.pickupLocation}%0A
+Nereye: ${step1Data.dropoffLocation}%0A
+Yolcular: ${step1Data.adults + step1Data.children} kişi%0A
+Transfer Ücreti: ${step2Data.transferPrice}$%0A
 ----------------------------------------%0A
-*Selected Vehicle*%0A
+*Seçilen Araç*%0A
 ${step2Data.vehicleName}%0A
-Vehicle Price: ${step2Data.vehiclePrice}$%0A
+Araç Ücreti: ${step2Data.vehiclePrice}$%0A
 ${step2Data.selectedExtras.length > 0 ? `
-*Selected Extra Services*%0A${step2Data.selectedExtras.map(extra => `${extra.name}: ${extra.price}$`).join('%0A')}%0A` : ''}
+*Seçilen Ekstra Hizmetler*%0A${step2Data.selectedExtras.map(extra => `${extra.name}: ${extra.price}$`).join('%0A')}%0A` : ''}
 ----------------------------------------%0A
-*Total Amount: ${step2Data.totalPrice}$*%0A
+*Toplam Tutar: ${step2Data.totalPrice}$*%0A
 ----------------------------------------%0A
-*Notes*%0A
-${personalInfo.notes || 'No notes'}%0A`
+*Notlar*%0A
+${personalInfo.notes || 'Not belirtilmedi'}%0A`
 
       const whatsappUrl = `https://wa.me/905528988899?text=${message}`
 
@@ -117,7 +117,7 @@ ${personalInfo.notes || 'No notes'}%0A`
       localStorage.removeItem('reservationStep2')
 
       window.open(whatsappUrl, '_blank')
-      router.push('/en')
+      router.push('/tr')
     }
   }
 
@@ -134,7 +134,7 @@ ${personalInfo.notes || 'No notes'}%0A`
   }
 
   if (!step1Data || !step2Data) {
-    router.push('/en/reservation')
+    router.push('/tr/reservation')
     return null
   }
 

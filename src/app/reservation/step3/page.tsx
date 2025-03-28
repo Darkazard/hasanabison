@@ -277,7 +277,7 @@ Ek Hizmet Toplamı: $${prices.extrasTotal}
                   </div>
                   <div>
                     <label className={labelClasses}>
-                      {t.flightCode} <span className="text-red-500">*</span>
+                      {t.flightNumber} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <input
