@@ -36,7 +36,12 @@ export const translations = {
     aboutUsText: 'Since 2013, Start Holiday VIP Transfer has been providing luxury and comfortable transportation services in Antalya. Each year, we enhance our service quality through valuable feedback from our guests and the dedicated work of our professional team.',
     notes: 'Notes',
     back: 'Back',
-    next: 'Next'
+    next: 'Next',
+    reservationSummary: 'Reservation Summary',
+    oneWayTransfer: 'One Way Transfer',
+    transferPrice: 'Transfer Price',
+    extras: 'Extras',
+    extraServicePrice: 'Extra Service Price'
   },
   de: {
     personalInfo: 'Persönliche Informationen',
@@ -75,7 +80,12 @@ export const translations = {
     aboutUsText: 'Seit 2013 bietet Start Holiday VIP Transfer luxuriöse und komfortable Transportdienste in Antalya an. Jedes Jahr verbessern wir unsere Servicequalität durch wertvolles Feedback unserer Gäste und die engagierte Arbeit unseres professionellen Teams.',
     notes: 'Notizen',
     back: 'Zurück',
-    next: 'Weiter'
+    next: 'Weiter',
+    reservationSummary: 'Reservierungsübersicht',
+    oneWayTransfer: 'Einwegtransfer',
+    transferPrice: 'Transferpreis',
+    extras: 'Extras',
+    extraServicePrice: 'Zusätzliche Servicekosten'
   },
   ru: {
     personalInfo: 'Личная информация',
@@ -114,7 +124,12 @@ export const translations = {
     aboutUsText: 'С 2013 года Start Holiday VIP Transfer предоставляет услуги роскошных и комфортабельных перевозок в Анталии. Каждый год мы повышаем качество наших услуг благодаря ценным отзывам наших гостей и самоотверженной работе нашей профессиональной команды.',
     notes: 'Примечания',
     back: 'Назад',
-    next: 'Далее'
+    next: 'Далее',
+    reservationSummary: 'Сводка бронирования',
+    oneWayTransfer: 'Трансфер в одну сторону',
+    transferPrice: 'Стоимость трансфера',
+    extras: 'Дополнительные услуги',
+    extraServicePrice: 'Стоимость дополнительных услуг'
   },
   tr: {
     personalInfo: 'Kişisel Bilgiler',
@@ -153,7 +168,12 @@ export const translations = {
     aboutUsText: '2013 yılından bu yana Start Holiday VIP Transfer, Antalya\'da lüks ve konforlu ulaşım hizmetleri sunmaktadır. Her yıl, misafirlerimizin değerli geri bildirimleri ve profesyonel ekibimizin özverili çalışması sayesinde hizmet kalitemizi artırıyoruz.',
     notes: 'Notlar',
     back: 'Geri',
-    next: 'İleri'
+    next: 'İleri',
+    reservationSummary: 'Rezervasyon Özeti',
+    oneWayTransfer: 'Tek Yön Transfer',
+    transferPrice: 'Transfer Fiyatı',
+    extras: 'Ekstralar',
+    extraServicePrice: 'Ekstra Servis Ücreti'
   }
 } as const;
 
