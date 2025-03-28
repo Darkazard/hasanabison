@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { translations } from '@/translations'
 import { useReservationStore } from '@/store/reservationStore'
@@ -18,6 +18,22 @@ export default function ReservationStep3({ params }: PageProps) {
   const t = translations[params.lang]
   const { step3Data, setStep3Data, setCurrentStep } = useReservationStore()
   const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
+    phone: '',
+    email: '',
+    flightNumber: '',
+    pickupTime: '',
+    paymentMethod: '',
+    notes: ''
+  })
+
+  useEffect(() => {
+    if (step3Data) {
+      setFormData(step3Data)
+    }
+  }, [step3Data])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,18 +41,19 @@ export default function ReservationStep3({ params }: PageProps) {
     // Form validasyonu
     const newErrors: Record<string, boolean> = {}
 
-    if (!step3Data.name) newErrors.name = true
-    if (!step3Data.surname) newErrors.surname = true
-    if (!step3Data.email) newErrors.email = true
-    if (!step3Data.phone) newErrors.phone = true
-    if (!step3Data.flightNumber) newErrors.flightNumber = true
-    if (!step3Data.pickupTime) newErrors.pickupTime = true
-    if (!step3Data.paymentMethod) newErrors.paymentMethod = true
+    if (!formData.name) newErrors.name = true
+    if (!formData.surname) newErrors.surname = true
+    if (!formData.email) newErrors.email = true
+    if (!formData.phone) newErrors.phone = true
+    if (!formData.flightNumber) newErrors.flightNumber = true
+    if (!formData.pickupTime) newErrors.pickupTime = true
+    if (!formData.paymentMethod) newErrors.paymentMethod = true
 
     setErrors(newErrors)
 
     // Hata yoksa devam et
     if (Object.keys(newErrors).length === 0) {
+      setStep3Data(formData)
       setCurrentStep(4)
       router.push(`/${params.lang}/reservation/step4`)
     }
@@ -58,8 +75,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="text"
-              value={step3Data.name}
-              onChange={(e) => setStep3Data({...step3Data, name: e.target.value})}
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
               className={`${inputClasses} ${errors.name ? errorClasses : ''}`}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -71,8 +88,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="text"
-              value={step3Data.surname}
-              onChange={(e) => setStep3Data({...step3Data, surname: e.target.value})}
+              value={formData.surname}
+              onChange={(e) => setFormData({...formData, surname: e.target.value})}
               className={`${inputClasses} ${errors.surname ? errorClasses : ''}`}
             />
             {errors.surname && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -84,8 +101,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="email"
-              value={step3Data.email}
-              onChange={(e) => setStep3Data({...step3Data, email: e.target.value})}
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
               className={`${inputClasses} ${errors.email ? errorClasses : ''}`}
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -97,8 +114,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="tel"
-              value={step3Data.phone}
-              onChange={(e) => setStep3Data({...step3Data, phone: e.target.value})}
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
               className={`${inputClasses} ${errors.phone ? errorClasses : ''}`}
             />
             {errors.phone && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -110,8 +127,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="text"
-              value={step3Data.flightNumber}
-              onChange={(e) => setStep3Data({...step3Data, flightNumber: e.target.value})}
+              value={formData.flightNumber}
+              onChange={(e) => setFormData({...formData, flightNumber: e.target.value})}
               className={`${inputClasses} ${errors.flightNumber ? errorClasses : ''}`}
             />
             {errors.flightNumber && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -123,8 +140,8 @@ export default function ReservationStep3({ params }: PageProps) {
             </label>
             <input
               type="datetime-local"
-              value={step3Data.pickupTime}
-              onChange={(e) => setStep3Data({...step3Data, pickupTime: e.target.value})}
+              value={formData.pickupTime}
+              onChange={(e) => setFormData({...formData, pickupTime: e.target.value})}
               className={`${inputClasses} ${errors.pickupTime ? errorClasses : ''}`}
             />
             {errors.pickupTime && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
@@ -135,8 +152,8 @@ export default function ReservationStep3({ params }: PageProps) {
               {t.paymentMethod} <span className="text-red-500">*</span>
             </label>
             <select
-              value={step3Data.paymentMethod}
-              onChange={(e) => setStep3Data({...step3Data, paymentMethod: e.target.value})}
+              value={formData.paymentMethod}
+              onChange={(e) => setFormData({...formData, paymentMethod: e.target.value})}
               className={`${inputClasses} ${errors.paymentMethod ? errorClasses : ''}`}
             >
               <option value="" disabled>{t.select}</option>
@@ -151,8 +168,8 @@ export default function ReservationStep3({ params }: PageProps) {
               {t.notes}
             </label>
             <textarea
-              value={step3Data.notes}
-              onChange={(e) => setStep3Data({...step3Data, notes: e.target.value})}
+              value={formData.notes}
+              onChange={(e) => setFormData({...formData, notes: e.target.value})}
               className={inputClasses}
               rows={3}
             />

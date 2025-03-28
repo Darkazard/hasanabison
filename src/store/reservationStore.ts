@@ -24,6 +24,7 @@ interface Step3Data {
   flightNumber: string
   pickupTime: string
   paymentMethod: string
+  notes?: string
 }
 
 interface PersonalInfo {
