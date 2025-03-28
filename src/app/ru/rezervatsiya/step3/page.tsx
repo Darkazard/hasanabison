@@ -233,7 +233,7 @@ ${personalInfo.notes || 'Нет примечаний'}%0A`
                   </div>
                   <div>
                     <label className={labelClasses}>
-                      {t.flightCode} <span className="text-red-500">*</span>
+                      {t.flightNumber} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <input
