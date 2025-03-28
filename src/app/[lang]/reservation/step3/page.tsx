@@ -5,7 +5,15 @@ import { useRouter } from 'next/navigation'
 import { translations } from '@/translations'
 import { useReservationStore } from '@/store/reservationStore'
 
-export default function ReservationStep3({ params }: { params: { lang: string } }) {
+type Language = 'en' | 'de' | 'ru' | 'tr'
+
+interface PageProps {
+  params: {
+    lang: Language
+  }
+}
+
+export default function ReservationStep3({ params }: PageProps) {
   const router = useRouter()
   const t = translations[params.lang]
   const { step3Data, setStep3Data, setCurrentStep } = useReservationStore()
