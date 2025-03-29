@@ -119,10 +119,10 @@ export default function HomePage() {
 
       {/* About Us Section */}
       <div className="container mx-auto px-4 py-16">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 p-8 mb-20">
+        <div className="bg-black backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-800 p-8 mb-20">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">О нас</h2>
           <div className="prose prose-lg prose-invert mx-auto">
-            <div className="text-gray-300 space-y-6">
+            <div className="text-white space-y-6">
               <p>
                 С 2013 года Start Holiday VIP Transfer предоставляет услуги роскошных и комфортабельных перевозок в Анталии. Каждый год мы повышаем качество наших услуг благодаря ценным отзывам наших гостей и самоотверженной работе нашей профессиональной команды.
               </p>

@@ -24,9 +24,7 @@ const vehicles: Vehicle[] = [
     images: [
       "/vehicles/ekonomik1.jpg",
       "/vehicles/ekonomik2.jpg",
-      "/vehicles/ekonomik3.jpg",
-      "/vehicles/ekonomik4.jpg",
-      "/vehicles/ekonomik5.jpg"
+      "/vehicles/ekonomik3.jpg"
     ],
     passengerCapacity: "1-5",
     luggageCapacity: "1-5",
@@ -52,8 +50,7 @@ const vehicles: Vehicle[] = [
       "/vehicles/premium1.jpg",
       "/vehicles/premium2.jpg",
       "/vehicles/premium3.jpg",
-      "/vehicles/premium4.jpg",
-      "/vehicles/premium5.jpg"
+      "/vehicles/premium4.jpg"
     ],
     passengerCapacity: "12",
     luggageCapacity: "12",
@@ -75,14 +72,14 @@ const vehicles: Vehicle[] = [
   },
   {
     id: 3,
-    name: "Business VIP",
+    name: "Maybach",
     description: "İş seyahatleri için özel tasarlanmış konfor.",
     images: [
-      "/vehicles/business1.jpg",
-      "/vehicles/business2.jpg",
-      "/vehicles/business3.jpg",
-      "/vehicles/business4.jpg",
-      "/vehicles/business5.jpg"
+      "/vehicles/maybach1.jpg",
+      "/vehicles/maybach2.jpg",
+      "/vehicles/maybach3.jpg",
+      "/vehicles/maybach4.jpg",
+      "/vehicles/maybach5.jpg"
     ],
     passengerCapacity: "1-3",
     luggageCapacity: "1-3",
@@ -101,14 +98,12 @@ const vehicles: Vehicle[] = [
   },
   {
     id: 4,
-    name: "Aile VIP",
+    name: "VIP Sprinter",
     description: "Geniş aileler için ideal seçim.",
     images: [
-      "/vehicles/family1.jpg",
-      "/vehicles/family2.jpg",
-      "/vehicles/family3.jpg",
-      "/vehicles/family4.jpg",
-      "/vehicles/family5.jpg"
+      "/vehicles/sprinter1.jpg",
+      "/vehicles/sprinter2.jpg",
+      "/vehicles/sprinter3.jpg"
     ],
     passengerCapacity: "6-8",
     luggageCapacity: "6-8",
@@ -128,17 +123,16 @@ const vehicles: Vehicle[] = [
   },
   {
     id: 5,
-    name: "Luxury VIP",
+    name: "VIP Sprinter Plus",
     description: "En üst düzey konfor ve lüks deneyim.",
     images: [
-      "/vehicles/luxury1.jpg",
-      "/vehicles/luxury2.jpg",
-      "/vehicles/luxury3.jpg",
-      "/vehicles/luxury4.jpg",
-      "/vehicles/luxury5.jpg"
+      "/vehicles/sprinterplus1.jpg",
+      "/vehicles/sprinterplus2.jpg",
+      "/vehicles/sprinterplus3.jpg",
+      "/vehicles/sprinterplus4.jpg"
     ],
-    passengerCapacity: "1-4",
-    luggageCapacity: "1-4",
+    passengerCapacity: "6-8",
+    luggageCapacity: "6-8",
     features: [
       "Fiyata Dahil Hizmetlerdir",
       "TV & WiFi & BUZDOLAP",

@@ -119,10 +119,10 @@ export default function HomePage() {
 
       {/* About Us Section */}
       <div className="container mx-auto px-4 py-16">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 p-8 mb-20">
+        <div className="bg-black backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-800 p-8 mb-20">
           <h2 className="text-3xl font-bold text-white mb-8 text-center">About Us</h2>
           <div className="prose prose-lg prose-invert mx-auto">
-            <div className="text-gray-300 space-y-6">
+            <div className="text-white space-y-6">
               <p>
                 Since 2013, Start Holiday VIP Transfer has been providing luxury and comfortable transportation services in Antalya. Each year, we enhance our service quality through valuable feedback from our guests and the dedicated work of our professional team.
               </p>
@@ -139,11 +139,11 @@ export default function HomePage() {
               </ul>
 
               <p>
-                <strong className="text-white">Special VIP Tours:</strong> You can create your own program and have a special experience accompanied by our professional drivers.
+                <strong className="text-white">Special VIP Tours:</strong> You can create your own program and experience a unique journey accompanied by our professional drivers.
               </p>
 
               <p className="text-xl font-semibold text-white text-center mt-8">
-                We are here to make your journey in Antalya unforgettable, providing services that combine luxury, comfort, and safety!
+                We are here to make your journey in Antalya unforgettable with our services that combine luxury, comfort, and safety!
               </p>
             </div>
           </div>

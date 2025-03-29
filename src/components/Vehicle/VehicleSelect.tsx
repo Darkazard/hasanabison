@@ -48,44 +48,41 @@ const getVehicles = (lang: string): Vehicle[] => {
   switch (lang) {
     case 'en':
       return [
-  {
-    id: 1,
+        {
+          id: 1,
           name: "Economic",
           description: "Comfortable and economical travel option",
-    images: [
-      "/vehicles/ekonomik1.jpg",
-      "/vehicles/ekonomik2.jpg",
-      "/vehicles/ekonomik3.jpg",
-      "/vehicles/ekonomik4.jpg",
-      "/vehicles/ekonomik5.jpg"
-    ],
-    passengerCapacity: "1-5",
-    luggageCapacity: "1-5",
-    features: [
+          images: [
+            "/vehicles/ekonomik1.jpg",
+            "/vehicles/ekonomik2.jpg",
+            "/vehicles/ekonomik3.jpg"
+          ],
+          passengerCapacity: "1-5",
+          luggageCapacity: "1-5",
+          features: [
             "Services Included in Price",
             "TV & WiFi & FRIDGE",
             "Baby Seat",
             "FREE Water",
             "Refreshments",
             "Mini Bar (Paid)"
-    ],
-    extraFeatures: [
+          ],
+          extraFeatures: [
             "Meeting with Name Sign",
             "No Hidden Costs"
-    ],
-          price: 0 // Ekonomik seçenek için ek ücret yok
-  },
-  {
-    id: 2,
+          ],
+          price: 0
+        },
+        {
+          id: 2,
           name: "Premium",
           description: "Premium vehicle with luxury travel experience",
-    images: [
-      "/vehicles/premium1.jpg",
-      "/vehicles/premium2.jpg",
-      "/vehicles/premium3.jpg",
-      "/vehicles/premium4.jpg",
-      "/vehicles/premium5.jpg"
-    ],
+          images: [
+            "/vehicles/premium1.jpg",
+            "/vehicles/premium2.jpg",
+            "/vehicles/premium3.jpg",
+            "/vehicles/premium4.jpg"
+          ],
           passengerCapacity: "1-4",
           luggageCapacity: "1-4",
           features: [
@@ -102,7 +99,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "🏆 Most Preferred Option",
             "⭐ Premium Customer Support"
           ],
-          price: 10, // Premium için +10 dolar
+          price: 10,
           isPopular: true
         },
         {
@@ -110,11 +107,11 @@ const getVehicles = (lang: string): Vehicle[] => {
           name: "Maybach",
           description: "Ultra luxury Maybach for VIP travel",
           images: [
-            "/vehicles/business1.jpg",
-            "/vehicles/business2.jpg",
-            "/vehicles/business3.jpg",
-            "/vehicles/business4.jpg",
-            "/vehicles/business5.jpg"
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
           ],
           passengerCapacity: "1-3",
           luggageCapacity: "1-3",
@@ -129,18 +126,16 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Meeting with Name Sign",
             "No Hidden Costs"
           ],
-          price: 25 // Maybach için +25 dolar
+          price: 25
         },
         {
           id: 4,
           name: "VIP Sprinter",
           description: "Ideal choice for large groups",
           images: [
-            "/vehicles/family1.jpg",
-            "/vehicles/family2.jpg",
-            "/vehicles/family3.jpg",
-            "/vehicles/family4.jpg",
-            "/vehicles/family5.jpg"
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -156,18 +151,17 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Meeting with Name Sign",
             "No Hidden Costs"
           ],
-          price: 20 // VIP Sprinter için +20 dolar
+          price: 20
         },
         {
           id: 5,
           name: "VIP Sprinter Plus",
           description: "Ultimate luxury experience for large groups",
           images: [
-            "/vehicles/luxury1.jpg",
-            "/vehicles/luxury2.jpg",
-            "/vehicles/luxury3.jpg",
-            "/vehicles/luxury4.jpg",
-            "/vehicles/luxury5.jpg"
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -183,7 +177,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Meeting with Name Sign",
             "No Hidden Costs"
           ],
-          price: 30 // VIP Sprinter Plus için +30 dolar
+          price: 30
         }
       ];
     case 'de':
@@ -195,9 +189,7 @@ const getVehicles = (lang: string): Vehicle[] => {
           images: [
             "/vehicles/ekonomik1.jpg",
             "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg",
-            "/vehicles/ekonomik4.jpg",
-            "/vehicles/ekonomik5.jpg"
+            "/vehicles/ekonomik3.jpg"
           ],
           passengerCapacity: "1-5",
           luggageCapacity: "1-5",
@@ -213,7 +205,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Treffen mit Namensschild",
             "Keine versteckten Kosten"
           ],
-          price: 0 // Ekonomik seçenek için ek ücret yok
+          price: 0
         },
         {
           id: 2,
@@ -223,8 +215,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/premium1.jpg",
             "/vehicles/premium2.jpg",
             "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg",
-            "/vehicles/premium5.jpg"
+            "/vehicles/premium4.jpg"
           ],
           passengerCapacity: "1-4",
           luggageCapacity: "1-4",
@@ -242,7 +233,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "🏆 Meistgewählte Option",
             "⭐ Premium-Kundenbetreuung"
           ],
-          price: 10, // Premium için +10 dolar
+          price: 10,
           isPopular: true
         },
         {
@@ -250,11 +241,11 @@ const getVehicles = (lang: string): Vehicle[] => {
           name: "Maybach",
           description: "Ultra-Luxus Maybach für VIP-Reisen",
           images: [
-            "/vehicles/business1.jpg",
-            "/vehicles/business2.jpg",
-            "/vehicles/business3.jpg",
-            "/vehicles/business4.jpg",
-            "/vehicles/business5.jpg"
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
           ],
           passengerCapacity: "1-3",
           luggageCapacity: "1-3",
@@ -269,18 +260,16 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Treffen mit Namensschild",
             "Keine versteckten Kosten"
           ],
-          price: 25 // Maybach için +25 dolar
+          price: 25
         },
         {
           id: 4,
           name: "VIP Sprinter",
           description: "Ideale Wahl für große Gruppen",
           images: [
-            "/vehicles/family1.jpg",
-            "/vehicles/family2.jpg",
-            "/vehicles/family3.jpg",
-            "/vehicles/family4.jpg",
-            "/vehicles/family5.jpg"
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -296,18 +285,17 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Treffen mit Namensschild",
             "Keine versteckten Kosten"
           ],
-          price: 20 // VIP Sprinter için +20 dolar
+          price: 20
         },
         {
           id: 5,
           name: "VIP Sprinter Plus",
           description: "Ultimatives Luxus-Erlebnis für große Gruppen",
           images: [
-            "/vehicles/luxury1.jpg",
-            "/vehicles/luxury2.jpg",
-            "/vehicles/luxury3.jpg",
-            "/vehicles/luxury4.jpg",
-            "/vehicles/luxury5.jpg"
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -323,7 +311,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Treffen mit Namensschild",
             "Keine versteckten Kosten"
           ],
-          price: 30 // VIP Sprinter Plus için +30 dolar
+          price: 30
         }
       ];
     case 'ru':
@@ -335,9 +323,7 @@ const getVehicles = (lang: string): Vehicle[] => {
           images: [
             "/vehicles/ekonomik1.jpg",
             "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg",
-            "/vehicles/ekonomik4.jpg",
-            "/vehicles/ekonomik5.jpg"
+            "/vehicles/ekonomik3.jpg"
           ],
           passengerCapacity: "1-5",
           luggageCapacity: "1-5",
@@ -353,7 +339,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Встреча с табличкой",
             "Без скрытых платежей"
           ],
-          price: 0 // Ekonomik seçenek için ek ücret yok
+          price: 0
         },
         {
           id: 2,
@@ -363,8 +349,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/premium1.jpg",
             "/vehicles/premium2.jpg",
             "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg",
-            "/vehicles/premium5.jpg"
+            "/vehicles/premium4.jpg"
           ],
           passengerCapacity: "1-4",
           luggageCapacity: "1-4",
@@ -382,7 +367,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "🏆 Самый популярный вариант",
             "⭐ Премиум-поддержка"
           ],
-          price: 10, // Premium için +10 dolar
+          price: 10,
           isPopular: true
         },
         {
@@ -390,11 +375,11 @@ const getVehicles = (lang: string): Vehicle[] => {
           name: "Майбах",
           description: "Ультра-люкс Maybach для VIP-путешествий",
           images: [
-            "/vehicles/business1.jpg",
-            "/vehicles/business2.jpg",
-            "/vehicles/business3.jpg",
-            "/vehicles/business4.jpg",
-            "/vehicles/business5.jpg"
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
           ],
           passengerCapacity: "1-3",
           luggageCapacity: "1-3",
@@ -409,18 +394,16 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Встреча с табличкой",
             "Без скрытых платежей"
           ],
-          price: 25 // Maybach için +25 dolar
+          price: 25
         },
         {
           id: 4,
           name: "VIP Спринтер",
           description: "Идеальный выбор для больших групп",
           images: [
-            "/vehicles/family1.jpg",
-            "/vehicles/family2.jpg",
-            "/vehicles/family3.jpg",
-            "/vehicles/family4.jpg",
-            "/vehicles/family5.jpg"
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -436,18 +419,17 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Встреча с табличкой",
             "Без скрытых платежей"
           ],
-          price: 20 // VIP Sprinter için +20 dolar
+          price: 20
         },
         {
           id: 5,
           name: "VIP Спринтер Плюс",
           description: "Ультимативный люкс для больших групп",
           images: [
-            "/vehicles/luxury1.jpg",
-            "/vehicles/luxury2.jpg",
-            "/vehicles/luxury3.jpg",
-            "/vehicles/luxury4.jpg",
-            "/vehicles/luxury5.jpg"
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
           ],
           passengerCapacity: "6-8",
           luggageCapacity: "6-8",
@@ -463,7 +445,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "Встреча с табличкой",
             "Без скрытых платежей"
           ],
-          price: 30 // VIP Sprinter Plus için +30 dolar
+          price: 30
         }
       ];
     default:
@@ -475,9 +457,7 @@ const getVehicles = (lang: string): Vehicle[] => {
           images: [
             "/vehicles/ekonomik1.jpg",
             "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg",
-            "/vehicles/ekonomik4.jpg",
-            "/vehicles/ekonomik5.jpg"
+            "/vehicles/ekonomik3.jpg"
           ],
           passengerCapacity: "1-5",
           luggageCapacity: "1-5",
@@ -493,7 +473,7 @@ const getVehicles = (lang: string): Vehicle[] => {
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 0 // Ekonomik seçenek için ek ücret yok
+          price: 0
         },
         {
           id: 2,
@@ -503,107 +483,103 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/premium1.jpg",
             "/vehicles/premium2.jpg",
             "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg",
-            "/vehicles/premium5.jpg"
+            "/vehicles/premium4.jpg"
           ],
           passengerCapacity: "1-4",
           luggageCapacity: "1-4",
-    features: [
-      "✨ Premium Hizmetler Dahil",
-      "📱 Yüksek Hızlı WiFi & 4K TV",
-      "❄️ Özel Mini Bar & Buzdolabı",
-      "👶 Lüks Bebek Koltuğu",
+          features: [
+            "✨ Premium Hizmetler Dahil",
+            "📱 Yüksek Hızlı WiFi & 4K TV",
+            "❄️ Özel Mini Bar & Buzdolabı",
+            "👶 Lüks Bebek Koltuğu",
             "🌊 Premium İçecek Servisi",
             "💺 VIP Masaj Koltukları"
-    ],
-    extraFeatures: [
+          ],
+          extraFeatures: [
             "🎯 İsim Tabelası ile VIP Karşılama",
-      "💎 %100 Müşteri Memnuniyeti",
-      "🏆 En Çok Tercih Edilen Seçenek",
-      "⭐ Premium Müşteri Desteği"
-    ],
-          price: 10, // Premium için +10 dolar
-    isPopular: true
-  },
-  {
-    id: 3,
+            "💎 %100 Müşteri Memnuniyeti",
+            "🏆 En Çok Tercih Edilen Seçenek",
+            "⭐ Premium Müşteri Desteği"
+          ],
+          price: 10,
+          isPopular: true
+        },
+        {
+          id: 3,
           name: "Maybach",
           description: "VIP seyahat için ultra lüks Maybach",
-    images: [
-      "/vehicles/business1.jpg",
-      "/vehicles/business2.jpg",
-      "/vehicles/business3.jpg",
-      "/vehicles/business4.jpg",
-      "/vehicles/business5.jpg"
-    ],
-    passengerCapacity: "1-3",
-    luggageCapacity: "1-3",
-    features: [
+          images: [
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
+          ],
+          passengerCapacity: "1-3",
+          luggageCapacity: "1-3",
+          features: [
             "Fiyata Dahil Hizmetler",
             "TV & WiFi & BUZDOLABI",
-      "Çalışma Masası",
+            "Çalışma Masası",
             "ÜCRETSİZ Su",
             "Mini Bar (Ücretli)"
-    ],
-    extraFeatures: [
+          ],
+          extraFeatures: [
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
-    ],
-          price: 25 // Maybach için +25 dolar
-  },
-  {
-    id: 4,
+          ],
+          price: 25
+        },
+        {
+          id: 4,
           name: "VIP Sprinter",
           description: "Büyük gruplar için ideal seçim",
-    images: [
-      "/vehicles/family1.jpg",
-      "/vehicles/family2.jpg",
-      "/vehicles/family3.jpg",
-      "/vehicles/family4.jpg",
-      "/vehicles/family5.jpg"
-    ],
-    passengerCapacity: "6-8",
-    luggageCapacity: "6-8",
-    features: [
+          images: [
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
+          ],
+          passengerCapacity: "6-8",
+          luggageCapacity: "6-8",
+          features: [
             "Fiyata Dahil Hizmetler",
             "TV & WiFi & BUZDOLABI",
             "2 Bebek Koltuğu",
             "ÜCRETSİZ Su",
             "İçecekler",
             "Mini Bar (Ücretli)"
-    ],
-    extraFeatures: [
-            "İsim Tabelası ile Karşılama",
-            "Gizli Ücret Yok"
-    ],
-          price: 20 // VIP Sprinter için +20 dolar
-  },
-  {
-    id: 5,
-          name: "VIP Sprinter Plus",
-          description: "Büyük gruplar için ultimatif lüks deneyim",
-    images: [
-      "/vehicles/luxury1.jpg",
-      "/vehicles/luxury2.jpg",
-      "/vehicles/luxury3.jpg",
-      "/vehicles/luxury4.jpg",
-      "/vehicles/luxury5.jpg"
-    ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-    features: [
-            "Fiyata Dahil Hizmetler",
-            "TV & WiFi & BUZDOLABI",
-      "Masaj Koltuğu",
-            "ÜCRETSİZ Su",
-            "İçecekler",
-            "Mini Bar (Ücretli)"
-    ],
-    extraFeatures: [
+          ],
+          extraFeatures: [
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 30 // VIP Sprinter Plus için +30 dolar
+          price: 20
+        },
+        {
+          id: 5,
+          name: "VIP Sprinter Plus",
+          description: "Büyük gruplar için ultimatif lüks deneyim",
+          images: [
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
+          ],
+          passengerCapacity: "6-8",
+          luggageCapacity: "6-8",
+          features: [
+            "Fiyata Dahil Hizmetler",
+            "TV & WiFi & BUZDOLABI",
+            "Masaj Koltuğu",
+            "ÜCRETSİZ Su",
+            "İçecekler",
+            "Mini Bar (Ücretli)"
+          ],
+          extraFeatures: [
+            "İsim Tabelası ile Karşılama",
+            "Gizli Ücret Yok"
+          ],
+          price: 30
         }
       ];
   }

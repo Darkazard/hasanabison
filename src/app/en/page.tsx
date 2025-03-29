@@ -209,7 +209,7 @@ export default function HomePage() {
                 <li>Shopping Tours: We provide special VIP transportation to Antalya's most prestigious shopping centers such as Mall of Antalya, Terracity, Mark Antalya, etc.</li>
                 <li>Antalya city, Kemer, Side, Manavgat, Alanya, Dimçayı, Kaş, Fethiye, Ölüdeniz, Saklıkent Fethiye: We offer special routes for our guests who want to discover the natural and historical beauties of Antalya and its surroundings.</li>
                 <li>St. Nicholas Church Visit: A church built after the death of Saint Nicholas in Demre, who is believed to be Santa Claus. It is believed that after his death, Santa Claus lay here for a while, and later his remains were taken to Bari by Italian sailors.</li>
-              </ul>
+          </ul>
 
               <p>
                 <strong className="text-white">Special VIP Tours:</strong> You can create your own program and have a special experience accompanied by our professional drivers.

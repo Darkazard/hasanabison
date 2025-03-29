@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ArrowLongRightIcon } from '@heroicons/react/24/outline'
 import { PlayIcon } from '@heroicons/react/24/solid'
 import { MapPinIcon, UserIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
 import VehicleList from '@/components/Vehicle/VehicleList'
 import Image from 'next/image'
+import PriceList from './PriceList'
 
 interface Step1Data {
   pickupLocation: string
@@ -79,7 +80,7 @@ const translations = {
     whoWeAre: 'Biz Kimiz',
     socialMedia: 'SOSYAL MEDYA',
     pleaseReview: 'Lütfen inceleyiniz',
-    pleaseReadReviews: 'Lütfen yorumları okuyun',
+    pleaseReadReviews: 'Lütfen inceleyiniz',
     // Duyuru metinleri
     announcement: {
       title: 'LÜTFEN OKUYUNUZ !!!',
@@ -320,8 +321,8 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
     }
   };
 
-  // Fiyat listesinden seçim yapıldığında
-  const handleRouteSelect = (from: string, to: string, price: number) => {
+  // handleRouteSelect fonksiyonunu useCallback ile sarmalayalım
+  const handleRouteSelect = useCallback((from: string, to: string, price: number) => {
     const newStep1Data = {
       ...step1Data,
       pickupLocation: from,
@@ -345,88 +346,11 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
     } else {
       router.push('/reservation/step2');
     }
-  };
+  }, [step1Data, pathname, router]);
 
-  // Fiyat listesi bileşeni
-  function PriceList() {
-    const t = translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr']
-    const [isVisible, setIsVisible] = useState(false);
-    const priceListRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        },
-        {
-          threshold: 0.1,
-          rootMargin: '50px'
-        }
-      );
-
-      if (priceListRef.current) {
-        observer.observe(priceListRef.current);
-      }
-
-      return () => {
-        if (priceListRef.current) {
-          observer.unobserve(priceListRef.current);
-        }
-      };
-    }, []);
-
-    return (
-      <div ref={priceListRef} className="mt-8">
-        <h3 className="text-2xl font-semibold text-white text-center mb-4">
-          {t.transferPriceList}
-        </h3>
-        <p className="text-center text-gray-400 mb-8">
-          {t.clickForRoute}
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          {routes.map((route, index) => (
-            <div
-              key={index}
-              onClick={() => handleRouteSelect(route.from, route.to, route.price)}
-              className="bg-black/80 backdrop-blur-sm rounded-xl p-4 border border-gray-800 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20 group cursor-pointer hover:border-red-500"
-              style={{
-                animationDelay: `${index * 150}ms`,
-                animationFillMode: 'forwards'
-              }}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <svg 
-                    className="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors"
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <div>
-                    <p className="text-sm text-gray-400">{t.fromLabel}</p>
-                    <p className="text-white font-medium">{route.from}</p>
-                    <p className="text-sm text-gray-400 mt-2">{t.toLabel}</p>
-                    <p className="text-white font-medium">{route.to}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-red-500 group-hover:text-red-600 transition-colors">
-                    {route.price} $
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  const [extras, setExtras] = useState({
+    facebook: false
+  });
 
   return (
     <div className="mt-4">
@@ -712,37 +636,45 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
 
       {showExtras && (
         <>
-          {/* Video Galerisi */}
-          <div className="mt-12">
-            <h2 className="text-2xl font-semibold text-white text-center mb-4">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].whoWeAre}</h2>
-            <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 relative z-10 mx-auto max-w-5xl w-full border border-gray-800">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {videos.map((video) => (
-                  <div
-                    key={video.id}
-                    onClick={() => {
-                      setSelectedVideo(video.youtubeUrl)
-                      setIsModalOpen(true)
-                    }}
-                    className="relative group cursor-pointer rounded-lg overflow-hidden"
-                  >
-                    <div className="aspect-video relative">
-                      <Image
-                        src={video.thumbnail}
-                        alt={video.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors flex items-center justify-center">
-                        <PlayIcon className="w-16 h-16 text-red-500 group-hover:text-red-600 group-hover:scale-125 transition-all duration-300 drop-shadow-lg" />
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/70 to-transparent">
-                        <h3 className="text-white text-lg font-medium">{video.title}</h3>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          {/* Video Section */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-center mb-3">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].whoWeAre}</h3>
+            <div className="grid grid-cols-2 gap-3 max-w-3xl mx-auto">
+              <div className="aspect-square">
+                <iframe
+                  className="w-full h-full rounded-lg"
+                  src="https://www.youtube.com/embed/your-video-id-1"
+                  title="Start Holiday VIP Transfer Video 1"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="aspect-square">
+                <iframe
+                  className="w-full h-full rounded-lg"
+                  src="https://www.youtube.com/embed/your-video-id-2"
+                  title="Start Holiday VIP Transfer Video 2"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="aspect-square">
+                <iframe
+                  className="w-full h-full rounded-lg"
+                  src="https://www.youtube.com/embed/your-video-id-3"
+                  title="Start Holiday VIP Transfer Video 3"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="aspect-square">
+                <iframe
+                  className="w-full h-full rounded-lg"
+                  src="https://www.youtube.com/embed/your-video-id-4"
+                  title="Start Holiday VIP Transfer Video 4"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             </div>
           </div>
@@ -750,39 +682,32 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
           {/* Sosyal Medya */}
           <div className="mt-12">
             <h3 className="text-2xl font-semibold text-white text-center mb-6">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].socialMedia}</h3>
-            <div className="grid grid-cols-2 gap-4 max-w-5xl mx-auto px-4">
-              <div className="flex flex-col items-center gap-2">
-                <a
-                  href="https://www.instagram.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-black/80 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-red-500 transition-colors w-full flex items-center justify-center"
-                >
-                  <img src="/instagram.png" alt="Instagram" className="h-12 w-auto" />
-                </a>
-                <span className="text-gray-300 text-sm text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].pleaseReview}</span>
-              </div>
-
-              <div className="flex flex-col items-center gap-2">
-                <a
-                  href="https://www.tripadvisor.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-black/80 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-red-500 transition-colors w-full flex items-center justify-center"
-                >
-                  <img src="/tripadvisor.png" alt="TripAdvisor" className="h-12 w-auto" />
-                </a>
-                <span className="text-gray-300 text-sm text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].pleaseReadReviews}</span>
-              </div>
+            <div className="flex gap-2">
+              <a
+                href="https://www.instagram.com/antalia_transfer/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-20 md:h-40 w-full bg-black/80 backdrop-blur-sm rounded-xl p-2 md:p-4 flex items-center justify-center hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.01] cursor-pointer border border-gray-800 hover:border-red-500"
+              >
+                <img src="/instagram.png" alt="Instagram" className="h-12 md:h-28 w-auto object-contain" />
+              </a>
+              <a
+                href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-20 md:h-40 w-full bg-black/80 backdrop-blur-sm rounded-xl p-2 md:p-4 flex items-center justify-center hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.01] cursor-pointer border border-gray-800 hover:border-red-500"
+              >
+                <img src="/facebook.png" alt="Facebook" className="h-12 md:h-28 w-auto object-contain" />
+              </a>
             </div>
           </div>
 
           {/* Duyuru Kutusu */}
-          <div className="mt-12 bg-gradient-to-r from-amber-900/80 to-amber-800/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-amber-700/50">
-            <h2 className="text-2xl font-bold text-amber-300 mb-4 text-center">
+          <div className="mt-12 bg-black backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800">
+            <h2 className="text-2xl font-bold text-white mb-4 text-center">
               {translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].announcement.title}
             </h2>
-            <div className="text-amber-100/90 space-y-4 text-sm">
+            <div className="text-white space-y-4 text-sm">
               <p className="font-semibold mb-4">
                 {translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].announcement.greeting}
               </p>
@@ -804,7 +729,7 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
       )}
 
       {/* Fiyat Listesi - Her zaman görünür */}
-      <PriceList />
+      <PriceList onRouteSelect={handleRouteSelect} />
 
       {/* Video Modal */}
       {isModalOpen && selectedVideo && (

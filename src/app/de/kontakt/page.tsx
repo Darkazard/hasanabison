@@ -61,30 +61,27 @@ export default function Contact() {
                   <i className="fas fa-phone text-red-500"></i>
                   <span>+90 552 898 8899</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <i className="fas fa-envelope text-red-500"></i>
-                  <span>info@holidaytransfer.com</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <i className="fas fa-map-marker-alt text-red-500"></i>
-                  <span>Fener Mah. Tekelioğlu Cad. No:1 Muratpaşa/Antalya</span>
-                </div>
+                <li className="flex items-center gap-2">
+                  <i className="fas fa-envelope"></i>
+                  <span>info@antalyatourtransfer.com</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <i className="fas fa-map-marker-alt"></i>
+                  <span>Peir Glory Apt. A blok 4/12 Florya sokak Altıntaş/Antalya</span>
+                </li>
               </div>
             </div>
 
             <div className="bg-black p-8 rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold mb-6 text-white">Social Media</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-white">Soziale Medien</h2>
               <div className="flex gap-4">
-                <a href="#" className="social-icon">
+                <a href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" className="social-icon">
+                <a href="https://www.instagram.com/antalia_transfer/" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a href="#" className="social-icon">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="social-icon">
+                <a href="https://wa.me/905528988899" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-whatsapp"></i>
                 </a>
               </div>

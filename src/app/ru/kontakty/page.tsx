@@ -73,18 +73,15 @@ export default function Contact() {
             </div>
 
             <div className="bg-black p-8 rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold mb-6 text-white">Social Media</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-white">Социальные сети</h2>
               <div className="flex gap-4">
-                <a href="#" className="social-icon">
+                <a href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" className="social-icon">
+                <a href="https://www.instagram.com/antalia_transfer/" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a href="#" className="social-icon">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="social-icon">
+                <a href="https://wa.me/905528988899" target="_blank" rel="noopener noreferrer" className="social-icon">
                   <i className="fab fa-whatsapp"></i>
                 </a>
               </div>

@@ -41,7 +41,11 @@ export const translations = {
     oneWayTransfer: 'One Way Transfer',
     transferPrice: 'Transfer Price',
     extras: 'Extras',
-    extraServicePrice: 'Extra Service Price'
+    extraServicePrice: 'Extra Service Price',
+    whoWeAre: "Who Are We?",
+    whoAreWe: "Who Are We?",
+    transferPriceList: 'Transfer Price List',
+    clickForRoute: 'Click to select route'
   },
   de: {
     personalInfo: 'Persönliche Informationen',
@@ -85,7 +89,11 @@ export const translations = {
     oneWayTransfer: 'Einwegtransfer',
     transferPrice: 'Transferpreis',
     extras: 'Extras',
-    extraServicePrice: 'Zusätzliche Servicekosten'
+    extraServicePrice: 'Zusätzliche Servicekosten',
+    whoWeAre: "Wer sind wir?",
+    whoAreWe: "Wer sind wir?",
+    transferPriceList: 'Transfer Preisliste',
+    clickForRoute: 'Klicken Sie, um Route auszuwählen'
   },
   ru: {
     personalInfo: 'Личная информация',
@@ -129,7 +137,11 @@ export const translations = {
     oneWayTransfer: 'Трансфер в одну сторону',
     transferPrice: 'Стоимость трансфера',
     extras: 'Дополнительные услуги',
-    extraServicePrice: 'Стоимость дополнительных услуг'
+    extraServicePrice: 'Стоимость дополнительных услуг',
+    whoWeAre: "Кто мы?",
+    whoAreWe: "Кто мы?",
+    transferPriceList: 'Список Цен на Трансфер',
+    clickForRoute: 'Нажмите для выбора маршрута'
   },
   tr: {
     personalInfo: 'Kişisel Bilgiler',
@@ -173,7 +185,11 @@ export const translations = {
     oneWayTransfer: 'Tek Yön Transfer',
     transferPrice: 'Transfer Fiyatı',
     extras: 'Ekstralar',
-    extraServicePrice: 'Ekstra Servis Ücreti'
+    extraServicePrice: 'Ekstra Servis Ücreti',
+    whoWeAre: "Biz Kimiz?",
+    whoAreWe: "Biz Kimiz?",
+    transferPriceList: 'Transfer Fiyat Listesi',
+    clickForRoute: 'Güzergah seçimi için tıklayınız'
   }
 } as const;
 
