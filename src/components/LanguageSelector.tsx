@@ -82,6 +82,7 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
     
     // Get the current path segments
     const segments = pathname.split('/').filter(Boolean);
+    console.log('Current segments:', segments);
     
     // If we're on the root path, just change the language
     if (segments.length === 0) {
@@ -101,13 +102,19 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
     }
 
     // Get the current route in the source language
-    const currentRoute = segments[0];
+    const currentRoute = segments.join('/');
+    console.log('Current route:', currentRoute);
+    console.log('Current language:', language);
+    console.log('Target language:', lang);
 
     // Define route mappings for each language combination
     const routeMappings: RouteMappings = {
       tr: {
         anasayfa: { en: 'home', ru: 'glavnaya', de: 'startseite' },
-        rezervasyon: { en: 'reservation', ru: 'rezervatsiya', de: 'reservierung' },
+        rezervasyon: { en: 'reservation/step1', ru: 'rezervatsiya', de: 'reservierung' },
+        'rezervasyon/step1': { en: 'reservation/step2', ru: 'rezervatsiya', de: 'reservierung' },
+        'rezervasyon/step2': { en: 'reservation/step3', ru: 'rezervatsiya/step3', de: 'reservierung/step3' },
+        'rezervasyon/step3': { en: 'reservation/step3', ru: 'rezervatsiya/step3', de: 'reservierung/step3' },
         arabalar: { en: 'cars', ru: 'avtomobili', de: 'autos' },
         transferler: { en: 'transfers', ru: 'transfery', de: 'transfers' },
         galeri: { en: 'gallery', ru: 'galereya', de: 'galerie' },
@@ -118,6 +125,9 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
       en: {
         home: { tr: 'anasayfa', ru: 'glavnaya', de: 'startseite' },
         reservation: { tr: 'rezervasyon', ru: 'rezervatsiya', de: 'reservierung' },
+        'reservation/step1': { tr: 'rezervasyon', ru: 'rezervatsiya', de: 'reservierung' },
+        'reservation/step2': { tr: 'rezervasyon/step2', ru: 'rezervatsiya/step2', de: 'reservierung/step2' },
+        'reservation/step3': { tr: 'rezervasyon/step3', ru: 'rezervatsiya/step3', de: 'reservierung/step3' },
         cars: { tr: 'arabalar', ru: 'avtomobili', de: 'autos' },
         transfers: { tr: 'transferler', ru: 'transfery', de: 'transfers' },
         gallery: { tr: 'galeri', ru: 'galereya', de: 'galerie' },
@@ -128,6 +138,9 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
       ru: {
         glavnaya: { tr: 'anasayfa', en: 'home', de: 'startseite' },
         rezervatsiya: { tr: 'rezervasyon', en: 'reservation', de: 'reservierung' },
+        'rezervatsiya/step1': { tr: 'rezervasyon/step1', en: 'reservation/step1', de: 'reservierung/step1' },
+        'rezervatsiya/step2': { tr: 'rezervasyon/step2', en: 'reservation/step2', de: 'reservierung/step2' },
+        'rezervatsiya/step3': { tr: 'rezervasyon/step3', en: 'reservation/step3', de: 'reservierung/step3' },
         avtomobili: { tr: 'arabalar', en: 'cars', de: 'autos' },
         transfery: { tr: 'transferler', en: 'transfers', de: 'transfers' },
         galereya: { tr: 'galeri', en: 'gallery', de: 'galerie' },
@@ -138,6 +151,9 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
       de: {
         startseite: { tr: 'anasayfa', en: 'home', ru: 'glavnaya' },
         reservierung: { tr: 'rezervasyon', en: 'reservation', ru: 'rezervatsiya' },
+        'reservierung/step1': { tr: 'rezervasyon/step1', en: 'reservation/step1', ru: 'rezervatsiya/step1' },
+        'reservierung/step2': { tr: 'rezervasyon/step2', en: 'reservation/step2', ru: 'rezervatsiya/step2' },
+        'reservierung/step3': { tr: 'rezervasyon/step3', en: 'reservation/step3', ru: 'rezervatsiya/step3' },
         autos: { tr: 'arabalar', en: 'cars', ru: 'avtomobili' },
         transfers: { tr: 'transferler', en: 'transfers', ru: 'transfery' },
         galerie: { tr: 'galeri', en: 'gallery', ru: 'galereya' },
@@ -150,8 +166,14 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
     // Get the mapped route based on current language and target language
     let mappedRoute = currentRoute;
     const currentLanguageRoutes = routeMappings[language as Language];
+    console.log('Current language routes:', currentLanguageRoutes);
+    console.log('Looking for route:', currentRoute);
+    
     if (currentLanguageRoutes && currentLanguageRoutes[currentRoute]) {
       mappedRoute = currentLanguageRoutes[currentRoute][lang as Exclude<Language, typeof language>] || currentRoute;
+      console.log('Mapped route:', mappedRoute);
+    } else {
+      console.log('No mapping found for route:', currentRoute);
     }
     
     // Construct the new path
@@ -159,6 +181,7 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
       ? `/${mappedRoute}`
       : `/${lang}/${mappedRoute}`;
     
+    console.log('New path:', newPath);
     router.push(newPath);
   };
 
@@ -180,4 +203,4 @@ const LanguageSelector = ({ className = '' }: LanguageSelectorProps) => {
   );
 };
 
-export default LanguageSelector; 
+export default LanguageSelector;

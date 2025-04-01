@@ -185,16 +185,16 @@ export default function VehicleList() {
           <div
             key={vehicle.id}
             onClick={() => handleVehicleSelect(vehicle)}
-            className={`relative group cursor-pointer transition-all duration-300 ${
+            className={`relative group cursor-pointer ${
               vehicle.id === 2 ? 'bg-gradient-to-br from-[#0f172a] to-[#1a237e] border-blue-400/30' : 'bg-black/80 border-gray-800'
             } backdrop-blur-sm rounded-xl p-4 border ${
               selectedVehicle?.id === vehicle.id
                 ? vehicle.id === 2
-                  ? 'scale-[1.02] shadow-2xl shadow-blue-500/20 border-blue-400'
-                  : 'scale-[1.02] shadow-xl shadow-red-500/20 border-red-500'
+                  ? 'shadow-2xl shadow-blue-500/20 border-blue-400'
+                  : 'shadow-xl shadow-red-500/20 border-red-500'
                 : vehicle.id === 2
-                ? 'hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20 hover:border-blue-400'
-                : 'hover:scale-[1.02] hover:shadow-xl hover:shadow-red-500/20 hover:border-red-500'
+                ? 'hover:shadow-2xl hover:shadow-blue-500/20 hover:border-blue-400'
+                : 'hover:shadow-xl hover:shadow-red-500/20 hover:border-red-500'
             }`}
           >
             {vehicle.id === 2 && (
@@ -202,9 +202,9 @@ export default function VehicleList() {
                 👑 En Çok Tercih Edilen 👑
               </div>
             )}
-            <div className="grid grid-cols-12 gap-6">
+            <div className="grid grid-cols-12 gap-2 sm:gap-6">
               {/* Araç Görseli */}
-              <div className={`${vehicle.id === 2 ? 'col-span-5' : 'col-span-3'} relative h-40`} onClick={e => e.stopPropagation()}>
+              <div className={`${vehicle.id === 2 ? 'col-span-12 md:col-span-5' : 'col-span-12 md:col-span-3'} relative h-40`} onClick={e => e.stopPropagation()}>
                 <div className="absolute inset-0 flex items-center justify-between z-10">
                   <button 
                     onClick={() => prevImage(vehicle.id, vehicle.images.length)} 
@@ -241,7 +241,7 @@ export default function VehicleList() {
               </div>
 
               {/* Özellikler */}
-              <div className={`${vehicle.id === 2 ? 'col-span-7' : 'col-span-9'} text-white`}>
+              <div className={`${vehicle.id === 2 ? 'col-span-12 md:col-span-7' : 'col-span-12 md:col-span-9'} text-white`}>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className={`text-lg font-bold ${
                     vehicle.id === 2
@@ -261,9 +261,9 @@ export default function VehicleList() {
                     <span className="text-sm text-gray-400">/kişi</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-300 mb-3">{vehicle.description}</p>
+                <p className="text-sm text-gray-300 mb-2">{vehicle.description}</p>
                 
-                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                <div className="grid grid-cols-2 gap-2 mb-0 sm:mb-4 text-sm">
                   <div>
                     <span className="text-gray-400">Yolcu:</span>
                     <p className="font-medium">{vehicle.passengerCapacity}</p>
@@ -275,7 +275,7 @@ export default function VehicleList() {
                 </div>
 
                 {vehicle.id === 2 ? (
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-x-4">
                     {vehicle.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-1">
                         <span className="text-gray-300 text-sm">{feature}</span>
@@ -283,33 +283,39 @@ export default function VehicleList() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                  <div className="flex flex-col">
                     <div>
-                      <div className="text-sm text-gray-400 mb-2">Araç Özellikleri:</div>
-                      <div className="space-y-1 text-sm">
+                      <div className="text-sm text-gray-400">Araç Özellikleri:</div>
+                      <div className="py-1">
                         {vehicle.features.map((feature, idx) => (
                           <div key={idx} className="flex items-center gap-1">
                             <svg className="w-3 h-3 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span className="text-gray-300 truncate">{feature}</span>
+                            <span className="text-gray-300 truncate text-sm">{feature}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div>
-                      <div className="text-sm text-gray-400 mb-2">Ekstra Özellikler:</div>
-                      <div className="space-y-1 text-sm">
-                        {vehicle.extraFeatures.map((feature, idx) => (
-                          <div key={idx} className="flex items-center gap-1">
-                            <svg className="w-3 h-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-gray-300 truncate">{feature}</span>
-                          </div>
-                        ))}
+                    {vehicle.extraFeatures.length > 0 && (
+                      <div className="-mt-4 sm:mt-0">
+                        <div className="text-sm text-gray-400">Ekstra Özellikler:</div>
+                        <div className="py-1">
+                          {vehicle.extraFeatures.map((feature, idx) => (
+                            <div key={idx} className="flex items-center gap-1">
+                              <svg className="w-3 h-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span className="text-gray-300 truncate text-sm">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                    )}
+
+                    <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4">
+                      <div></div>
                     </div>
                   </div>
                 )}

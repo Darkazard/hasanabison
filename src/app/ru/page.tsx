@@ -12,6 +12,7 @@ import 'swiper/css/effect-fade'
 import ReservationForm from '@/components/Reservation/ReservationForm'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import LanguageSelector from '@/components/LanguageSelector'
+import Link from 'next/link'
 
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import VehicleSelect from '@/components/Vehicle/VehicleSelect'
+import { translations } from '@/translations'
 
 interface Step1Data {
   pickupLocation: string
@@ -11,10 +12,19 @@ interface Step1Data {
   children: number
   currency: string
   price: number
+  tripType: 'one-way' | 'round-trip'
+}
+
+interface Vehicle {
+  id: number
+  name: string
+  price: number
+  image: string
 }
 
 export default function Step2Page() {
   const router = useRouter()
+  const t = translations.en
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -33,16 +43,35 @@ export default function Step2Page() {
     vehiclePrice: number;
     vehicleName: string;
     selectedExtras: { name: string; price: number }[];
+    vehicleImage: string;
+    tripType: 'one-way' | 'round-trip';
   }) => {
     if (data.vehicleId && step1Data) {
       const extrasTotal = data.selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+      
+      // Calculate vehicle total based on trip type
+      let vehicleTotal;
+      if (step1Data.tripType === 'round-trip') {
+        vehicleTotal = ((step1Data.price + data.vehiclePrice) * 2) - 5 + extrasTotal;
+      } else {
+        vehicleTotal = step1Data.price + data.vehiclePrice + extrasTotal;
+      }
+
       const step2Data = {
         ...data,
         transferPrice: step1Data.price,
-        totalPrice: step1Data.price + data.vehiclePrice + extrasTotal
+        totalPrice: vehicleTotal,
+        vehicleImage: data.vehicleImage,
+        tripType: data.tripType
       };
       localStorage.setItem('reservationStep2', JSON.stringify(step2Data));
       router.push('/en/reservation/step3');
+    }
+  };
+
+  const handleTripTypeChange = (tripType: 'one-way' | 'round-trip') => {
+    if (step1Data) {
+      setStep1Data({ ...step1Data, tripType });
     }
   };
 
@@ -51,7 +80,7 @@ export default function Step2Page() {
       <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center text-white">Loading...</div>
+            <div className="text-center text-white">{t.loading}</div>
           </div>
         </div>
       </div>
@@ -64,41 +93,20 @@ export default function Step2Page() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 mb-8 border border-gray-800">
-            <h2 className="text-2xl font-bold text-white mb-4">Reservation Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div>
-                <p className="text-sm text-gray-400">From</p>
-                <p className="text-lg text-white">{step1Data.pickupLocation}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">To</p>
-                <p className="text-lg text-white">{step1Data.dropoffLocation}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Passengers</p>
-                <p className="text-lg text-white">{step1Data.adults + step1Data.children} People</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Currency</p>
-                <p className="text-lg text-white">{step1Data.currency || '$'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Transfer Price</p>
-                <p className="text-lg font-semibold text-red-500">${step1Data.price}</p>
-              </div>
-            </div>
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] 2xl:max-w-[80vw] mx-auto py-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">{t.selectVehicle}</h1>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">{t.step2}</span>
           </div>
-
-          <h1 className="text-3xl font-bold text-white text-center mb-8">Vehicle Selection</h1>
-          <VehicleSelect 
-            onVehicleSelect={handleVehicleSelect}
-            initialPrice={step1Data.price}
-          />
         </div>
+
+        <VehicleSelect
+          onVehicleSelect={handleVehicleSelect}
+          initialPrice={step1Data.price}
+          onTripTypeChange={handleTripTypeChange}
+        />
       </div>
     </div>
   )

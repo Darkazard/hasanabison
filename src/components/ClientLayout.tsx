@@ -1,84 +1,102 @@
 'use client'
 
-import { useLanguage } from "@/context/LanguageContext";
-import LanguageSelector from "@/components/LanguageSelector";
-import { useState, useEffect } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useLanguage } from '@/context/LanguageContext'
+import LanguageSelector from "@/components/LanguageSelector"
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { language, isLoading } = useLanguage();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname()
+  const { setLanguage, language, isLoading } = useLanguage()
+  const [mounted, setMounted] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      const path = pathname.split('/')
+      if (path[1] === 'en' || path[1] === 'de' || path[1] === 'ru') {
+        setLanguage(path[1])
+      } else {
+        setLanguage('tr')
+      }
+    }
+  }, [pathname, mounted, setLanguage])
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.top = `-${window.scrollY}px`
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      const scrollY = document.body.style.top
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.top = ''
+      window.scrollTo(0, parseInt(scrollY || '0') * -1)
     }
-  }, [isMenuOpen]);
+  }, [isMenuOpen])
 
   const trLinks = [
     { href: "/anasayfa", text: "Ana Sayfa" },
-    { href: "/rezervasyon", text: "Rezervasyon" },
+    { href: "/rezervasyon/step1", text: "Rezervasyon" },
     { href: "/arabalar", text: "Arabalar" },
     { href: "/transferler", text: "Transferler" },
     { href: "/galeri", text: "Galeri" },
     { href: "/hakkimizda", text: "Hakkımızda" },
     { href: "/yorumlar", text: "Yorumlar" },
     { href: "/iletisim", text: "İletişim" },
-  ];
+  ]
 
   const enLinks = [
     { href: "/en/home", text: "Home" },
-    { href: "/en/reservation", text: "Reservation" },
+    { href: "/en/reservation/step1", text: "Reservation" },
     { href: "/en/cars", text: "Cars" },
     { href: "/en/transfers", text: "Transfers" },
     { href: "/en/gallery", text: "Gallery" },
     { href: "/en/about", text: "About" },
     { href: "/en/reviews", text: "Reviews" },
     { href: "/en/contact", text: "Contact" },
-  ];
+  ]
 
   const ruLinks = [
     { href: '/ru/glavnaya', text: 'Главная' },
-    { href: '/ru/rezervatsiya', text: 'Бронирование' },
+    { href: '/ru/rezervatsiya/step1', text: 'Бронирование' },
     { href: '/ru/avtomobili', text: 'Автомобили' },
     { href: '/ru/transfery', text: 'Трансферы' },
     { href: '/ru/galereya', text: 'Галерея' },
     { href: '/ru/o-nas', text: 'О нас' },
     { href: '/ru/otzyvy', text: 'Отзывы' },
     { href: '/ru/kontakty', text: 'Контакты' }
-  ];
+  ]
 
   const deLinks = [
     { href: '/de/startseite', text: 'Startseite' },
-    { href: '/de/reservierung', text: 'Reservierung' },
+    { href: '/de/reservierung/step1', text: 'Reservierung' },
     { href: '/de/autos', text: 'Autos' },
     { href: '/de/transfers', text: 'Transfers' },
     { href: '/de/galerie', text: 'Galerie' },
     { href: '/de/uber-uns', text: 'Über uns' },
     { href: '/de/bewertungen', text: 'Bewertungen' },
     { href: '/de/kontakt', text: 'Kontakt' }
-  ];
+  ]
 
-  const links = language === 'tr' ? trLinks : language === 'en' ? enLinks : language === 'ru' ? ruLinks : deLinks;
-  const logoLink = language === 'tr' ? '/anasayfa' : language === 'en' ? '/en/home' : language === 'ru' ? '/ru/glavnaya' : '/de/startseite';
+  const links = language === 'tr' ? trLinks : language === 'en' ? enLinks : language === 'ru' ? ruLinks : deLinks
+  const logoLink = language === 'tr' ? '/anasayfa' : language === 'en' ? '/en/home' : language === 'ru' ? '/ru/glavnaya' : '/de/startseite'
 
   // If still loading, don't render the layout
   if (isLoading) {
-    return null;
+    return null
   }
 
   return (
@@ -209,11 +227,29 @@ export default function ClientLayout({
                 {language === 'en' ? "Social Media" : language === 'ru' ? "Социальные сети" : language === 'de' ? "Soziale Medien" : "Sosyal Medya"}
               </h3>
               <div className="flex gap-3 md:gap-4">
-                <a href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-xl md:text-2xl text-gray-400 hover:text-red-500">
+                <a
+                  href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xl md:text-2xl text-gray-400 hover:text-red-500"
+                >
                   <i className="fab fa-facebook"></i>
                 </a>
-                <a href="https://www.instagram.com/antalia_transfer/" target="_blank" rel="noopener noreferrer" className="text-xl md:text-2xl text-gray-400 hover:text-red-500">
+                <a
+                  href="https://www.instagram.com/antalia_transfer/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xl md:text-2xl text-gray-400 hover:text-red-500"
+                >
                   <i className="fab fa-instagram"></i>
+                </a>
+                <a
+                  href="https://wa.me/905528988899"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xl md:text-2xl text-gray-400 hover:text-green-500"
+                >
+                  <i className="fab fa-whatsapp"></i>
                 </a>
               </div>
             </div>
@@ -225,5 +261,5 @@ export default function ClientLayout({
         </div>
       </footer>
     </div>
-  );
+  )
 } 

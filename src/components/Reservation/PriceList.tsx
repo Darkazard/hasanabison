@@ -6,6 +6,7 @@ import { routes } from '@/data/routes'
 
 interface PriceListProps {
   onRouteSelect: (from: string, to: string, price: number) => void;
+  onNext: (data: any) => void;
 }
 
 // Çeviri nesnesi
@@ -56,13 +57,14 @@ const translations = {
   }
 }
 
-const PriceList = memo(function PriceList({ onRouteSelect }: PriceListProps) {
+const PriceList = memo(function PriceList({ onRouteSelect, onNext }: PriceListProps) {
   const [hasAnimated, setHasAnimated] = useState(false);
   const [tripType, setTripType] = useState<'oneWay' | 'roundTrip'>('oneWay');
   const priceListRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const currentLang = pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr';
+  const availableRoutes = routes;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -92,7 +94,25 @@ const PriceList = memo(function PriceList({ onRouteSelect }: PriceListProps) {
   }, [hasAnimated]);
 
   const handleRouteSelect = (from: string, to: string, price: number) => {
-    onRouteSelect(from, to, tripType === 'roundTrip' ? (price * 2) - 5 : price);
+    const selectedRoute = availableRoutes.find(route => route.to === to);
+    if (!selectedRoute) return;
+
+    const finalPrice = currentLang === 'de' ? selectedRoute.euroPrice : selectedRoute.price;
+    const finalFrom = currentLang === 'de' ? selectedRoute.fromDe : selectedRoute.from;
+    
+    onRouteSelect(
+      finalFrom,
+      to,
+      tripType === 'roundTrip' ? (finalPrice * 2) - 5 : finalPrice
+    );
+
+    // Navigate to step2
+    onNext({
+      from: finalFrom,
+      to: to,
+      price: tripType === 'roundTrip' ? (finalPrice * 2) - 5 : finalPrice,
+      currency: currentLang === 'de' ? 'EUR' : 'USD'
+    });
   };
 
   return (
@@ -131,7 +151,7 @@ const PriceList = memo(function PriceList({ onRouteSelect }: PriceListProps) {
       )}
       <p className="text-center text-gray-400 text-sm md:text-base mb-4">{translations[currentLang].clickForRoute}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 max-w-7xl mx-auto px-2 md:px-4">
-        {routes.map((route, index) => (
+        {availableRoutes.map((route, index) => (
           <div
             key={`${route.from}-${route.to}`}
             onClick={() => handleRouteSelect(route.from, route.to, route.price)}
@@ -149,7 +169,9 @@ const PriceList = memo(function PriceList({ onRouteSelect }: PriceListProps) {
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="flex flex-col min-w-0">
                   <span className="text-gray-400 text-xs md:text-sm">{translations[currentLang].from}</span>
-                  <span className="text-white text-sm md:text-base font-medium truncate">{route.from}</span>
+                  <span className="text-white text-sm md:text-base font-medium truncate">
+                    {currentLang === 'de' ? route.fromDe : route.from}
+                  </span>
                 </div>
                 <div className="text-red-500 mx-1 md:mx-2 md:text-lg">➜</div>
                 <div className="flex flex-col min-w-0">
@@ -161,11 +183,11 @@ const PriceList = memo(function PriceList({ onRouteSelect }: PriceListProps) {
             <div className="flex flex-col items-end ml-2 md:ml-3">
               <div className="flex items-center gap-2">
                 <span className={`text-red-500 font-semibold text-base md:text-lg whitespace-nowrap group-hover:text-red-400 transition-colors ${tripType === 'roundTrip' ? 'line-through text-gray-500' : ''}`}>
-                  ${tripType === 'roundTrip' ? route.price * 2 : route.price}
+                  {currentLang === 'de' ? '€' : '$'}{tripType === 'roundTrip' ? (currentLang === 'de' ? route.euroPrice * 2 : route.price * 2) : (currentLang === 'de' ? route.euroPrice : route.price)}
                 </span>
                 {tripType === 'roundTrip' && (
                   <span className="text-red-500 font-semibold text-base md:text-lg whitespace-nowrap group-hover:text-red-400 transition-colors">
-                    ${(route.price * 2) - 5}
+                    {currentLang === 'de' ? '€' : '$'}{currentLang === 'de' ? (route.euroPrice * 2) - 5 : (route.price * 2) - 5}
                   </span>
                 )}
               </div>

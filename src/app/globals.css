@@ -48,7 +48,7 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 17, 17, 17;
+  --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
 }
 
@@ -68,8 +68,22 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
-  min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  overflow-x: hidden;
+}
+
+/* Remove any page transition animations */
+.page-transition {
+  transition: none !important;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
 @keyframes fadeIn {

@@ -1,7 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useTripType } from '@/contexts/TripTypeContext';
+import { translations } from '@/translations';
 
 interface Vehicle {
   id: number;
@@ -14,6 +17,8 @@ interface Vehicle {
   extraFeatures: string[];
   price: number;
   isPopular?: boolean;
+  maxPassengers: number;
+  extras: Extra[];
 }
 
 interface ExtraService {
@@ -23,6 +28,12 @@ interface ExtraService {
   description: string;
 }
 
+interface Extra {
+  id: number;
+  name: string;
+  price: number;
+}
+
 interface VehicleSelectProps {
   onVehicleSelect: (data: {
     vehicleId: number | null;
@@ -30,9 +41,11 @@ interface VehicleSelectProps {
     vehiclePrice: number;
     vehicleName: string;
     selectedExtras: { name: string; price: number }[];
+    vehicleImage: string;
+    tripType: 'one-way' | 'round-trip';
   }) => void;
   initialPrice: number;
-  onTripTypeChange?: (vehicleId: number, type: TripType) => void;
+  onTripTypeChange: (vehicleId: number, type: 'one-way' | 'round-trip') => void;
 }
 
 type TripType = 'one-way' | 'round-trip';
@@ -46,409 +59,7 @@ interface TripTypeSelectorProps {
 // Move vehicles array outside component
 const getVehicles = (lang: string): Vehicle[] => {
   switch (lang) {
-    case 'en':
-      return [
-        {
-          id: 1,
-          name: "Economic",
-          description: "Comfortable and economical travel option",
-          images: [
-            "/vehicles/ekonomik1.jpg",
-            "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg"
-          ],
-          passengerCapacity: "1-5",
-          luggageCapacity: "1-5",
-          features: [
-            "Services Included in Price",
-            "TV & WiFi & FRIDGE",
-            "Baby Seat",
-            "FREE Water",
-            "Refreshments",
-            "Mini Bar (Paid)"
-          ],
-          extraFeatures: [
-            "Meeting with Name Sign",
-            "No Hidden Costs"
-          ],
-          price: 0
-        },
-        {
-          id: 2,
-          name: "Premium",
-          description: "Premium vehicle with luxury travel experience",
-          images: [
-            "/vehicles/premium1.jpg",
-            "/vehicles/premium2.jpg",
-            "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg"
-          ],
-          passengerCapacity: "1-4",
-          luggageCapacity: "1-4",
-          features: [
-            "✨ Premium Services Included",
-            "📱 High-Speed WiFi & 4K TV",
-            "❄️ Private Mini Bar & Fridge",
-            "👶 Luxury Baby Seat",
-            "🌊 Premium Beverage Service",
-            "💺 Massage VIP Seats"
-          ],
-          extraFeatures: [
-            "🎯 VIP Welcome with Name Sign",
-            "💎 100% Customer Satisfaction",
-            "🏆 Most Preferred Option",
-            "⭐ Premium Customer Support"
-          ],
-          price: 10,
-          isPopular: true
-        },
-        {
-          id: 3,
-          name: "Maybach",
-          description: "Ultra luxury Maybach for VIP travel",
-          images: [
-            "/vehicles/maybach1.jpg",
-            "/vehicles/maybach2.jpg",
-            "/vehicles/maybach3.jpg",
-            "/vehicles/maybach4.jpg",
-            "/vehicles/maybach5.jpg"
-          ],
-          passengerCapacity: "1-3",
-          luggageCapacity: "1-3",
-          features: [
-            "Services Included in Price",
-            "TV & WiFi & FRIDGE",
-            "Work Desk",
-            "FREE Water",
-            "Mini Bar (Paid)"
-          ],
-          extraFeatures: [
-            "Meeting with Name Sign",
-            "No Hidden Costs"
-          ],
-          price: 25
-        },
-        {
-          id: 4,
-          name: "VIP Sprinter",
-          description: "Ideal choice for large groups",
-          images: [
-            "/vehicles/sprinter1.jpg",
-            "/vehicles/sprinter2.jpg",
-            "/vehicles/sprinter3.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Services Included in Price",
-            "TV & WiFi & FRIDGE",
-            "2 Baby Seats",
-            "FREE Water",
-            "Refreshments",
-            "Mini Bar (Paid)"
-          ],
-          extraFeatures: [
-            "Meeting with Name Sign",
-            "No Hidden Costs"
-          ],
-          price: 20
-        },
-        {
-          id: 5,
-          name: "VIP Sprinter Plus",
-          description: "Ultimate luxury experience for large groups",
-          images: [
-            "/vehicles/sprinterplus1.jpg",
-            "/vehicles/sprinterplus2.jpg",
-            "/vehicles/sprinterplus3.jpg",
-            "/vehicles/sprinterplus4.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Services Included in Price",
-            "TV & WiFi & FRIDGE",
-            "Massage Seat",
-            "FREE Water",
-            "Refreshments",
-            "Mini Bar (Paid)"
-          ],
-          extraFeatures: [
-            "Meeting with Name Sign",
-            "No Hidden Costs"
-          ],
-          price: 30
-        }
-      ];
-    case 'de':
-      return [
-        {
-          id: 1,
-          name: "Ekonomisch",
-          description: "Komfortable und wirtschaftliche Reisemöglichkeit",
-          images: [
-            "/vehicles/ekonomik1.jpg",
-            "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg"
-          ],
-          passengerCapacity: "1-5",
-          luggageCapacity: "1-5",
-          features: [
-            "Im Preis enthaltene Leistungen",
-            "TV & WLAN & KÜHLSCHRANK",
-            "Babysitz",
-            "GRATIS Wasser",
-            "Erfrischungen",
-            "Minibar (kostenpflichtig)"
-          ],
-          extraFeatures: [
-            "Treffen mit Namensschild",
-            "Keine versteckten Kosten"
-          ],
-          price: 0
-        },
-        {
-          id: 2,
-          name: "Premium",
-          description: "Premium-Fahrzeug mit Luxus-Reiseerlebnis",
-          images: [
-            "/vehicles/premium1.jpg",
-            "/vehicles/premium2.jpg",
-            "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg"
-          ],
-          passengerCapacity: "1-4",
-          luggageCapacity: "1-4",
-          features: [
-            "✨ Premium-Dienste inklusive",
-            "📱 Hochgeschwindigkeits-WLAN & 4K TV",
-            "❄️ Private Minibar & Kühlschrank",
-            "👶 Luxus-Babysitz",
-            "🌊 Premium-Getränkeservice",
-            "💺 VIP-Massagesitze"
-          ],
-          extraFeatures: [
-            "🎯 VIP-Empfang mit Namensschild",
-            "💎 100% Kundenzufriedenheit",
-            "🏆 Meistgewählte Option",
-            "⭐ Premium-Kundenbetreuung"
-          ],
-          price: 10,
-          isPopular: true
-        },
-        {
-          id: 3,
-          name: "Maybach",
-          description: "Ultra-Luxus Maybach für VIP-Reisen",
-          images: [
-            "/vehicles/maybach1.jpg",
-            "/vehicles/maybach2.jpg",
-            "/vehicles/maybach3.jpg",
-            "/vehicles/maybach4.jpg",
-            "/vehicles/maybach5.jpg"
-          ],
-          passengerCapacity: "1-3",
-          luggageCapacity: "1-3",
-          features: [
-            "Im Preis enthaltene Leistungen",
-            "TV & WLAN & KÜHLSCHRANK",
-            "Arbeitsplatz",
-            "GRATIS Wasser",
-            "Minibar (kostenpflichtig)"
-          ],
-          extraFeatures: [
-            "Treffen mit Namensschild",
-            "Keine versteckten Kosten"
-          ],
-          price: 25
-        },
-        {
-          id: 4,
-          name: "VIP Sprinter",
-          description: "Ideale Wahl für große Gruppen",
-          images: [
-            "/vehicles/sprinter1.jpg",
-            "/vehicles/sprinter2.jpg",
-            "/vehicles/sprinter3.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Im Preis enthaltene Leistungen",
-            "TV & WLAN & KÜHLSCHRANK",
-            "2 Babysitze",
-            "GRATIS Wasser",
-            "Erfrischungen",
-            "Minibar (kostenpflichtig)"
-          ],
-          extraFeatures: [
-            "Treffen mit Namensschild",
-            "Keine versteckten Kosten"
-          ],
-          price: 20
-        },
-        {
-          id: 5,
-          name: "VIP Sprinter Plus",
-          description: "Ultimatives Luxus-Erlebnis für große Gruppen",
-          images: [
-            "/vehicles/sprinterplus1.jpg",
-            "/vehicles/sprinterplus2.jpg",
-            "/vehicles/sprinterplus3.jpg",
-            "/vehicles/sprinterplus4.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Im Preis enthaltene Leistungen",
-            "TV & WLAN & KÜHLSCHRANK",
-            "Massagesitz",
-            "GRATIS Wasser",
-            "Erfrischungen",
-            "Minibar (kostenpflichtig)"
-          ],
-          extraFeatures: [
-            "Treffen mit Namensschild",
-            "Keine versteckten Kosten"
-          ],
-          price: 30
-        }
-      ];
-    case 'ru':
-      return [
-        {
-          id: 1,
-          name: "Экономичный",
-          description: "Комфортный и экономичный вариант путешествия",
-          images: [
-            "/vehicles/ekonomik1.jpg",
-            "/vehicles/ekonomik2.jpg",
-            "/vehicles/ekonomik3.jpg"
-          ],
-          passengerCapacity: "1-5",
-          luggageCapacity: "1-5",
-          features: [
-            "Услуги включены в цену",
-            "ТВ и WiFi и ХОЛОДИЛЬНИК",
-            "Детское кресло",
-            "БЕСПЛАТНАЯ вода",
-            "Напитки",
-            "Мини-бар (платный)"
-          ],
-          extraFeatures: [
-            "Встреча с табличкой",
-            "Без скрытых платежей"
-          ],
-          price: 0
-        },
-        {
-          id: 2,
-          name: "Премиум",
-          description: "Премиальный автомобиль с люксовым путешествием",
-          images: [
-            "/vehicles/premium1.jpg",
-            "/vehicles/premium2.jpg",
-            "/vehicles/premium3.jpg",
-            "/vehicles/premium4.jpg"
-          ],
-          passengerCapacity: "1-4",
-          luggageCapacity: "1-4",
-          features: [
-            "✨ Премиум-услуги включены",
-            "📱 Высокоскоростной WiFi и 4K ТВ",
-            "❄️ Приватный мини-бар и холодильник",
-            "👶 Люкс детское кресло",
-            "🌊 Премиум-напитки",
-            "💺 VIP-массажные кресла"
-          ],
-          extraFeatures: [
-            "🎯 VIP-встреча с табличкой",
-            "💎 100% удовлетворенность клиентов",
-            "🏆 Самый популярный вариант",
-            "⭐ Премиум-поддержка"
-          ],
-          price: 10,
-          isPopular: true
-        },
-        {
-          id: 3,
-          name: "Майбах",
-          description: "Ультра-люкс Maybach для VIP-путешествий",
-          images: [
-            "/vehicles/maybach1.jpg",
-            "/vehicles/maybach2.jpg",
-            "/vehicles/maybach3.jpg",
-            "/vehicles/maybach4.jpg",
-            "/vehicles/maybach5.jpg"
-          ],
-          passengerCapacity: "1-3",
-          luggageCapacity: "1-3",
-          features: [
-            "Услуги включены в цену",
-            "ТВ и WiFi и ХОЛОДИЛЬНИК",
-            "Рабочий стол",
-            "БЕСПЛАТНАЯ вода",
-            "Мини-бар (платный)"
-          ],
-          extraFeatures: [
-            "Встреча с табличкой",
-            "Без скрытых платежей"
-          ],
-          price: 25
-        },
-        {
-          id: 4,
-          name: "VIP Спринтер",
-          description: "Идеальный выбор для больших групп",
-          images: [
-            "/vehicles/sprinter1.jpg",
-            "/vehicles/sprinter2.jpg",
-            "/vehicles/sprinter3.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Услуги включены в цену",
-            "ТВ и WiFi и ХОЛОДИЛЬНИК",
-            "2 детских кресла",
-            "БЕСПЛАТНАЯ вода",
-            "Напитки",
-            "Мини-бар (платный)"
-          ],
-          extraFeatures: [
-            "Встреча с табличкой",
-            "Без скрытых платежей"
-          ],
-          price: 20
-        },
-        {
-          id: 5,
-          name: "VIP Спринтер Плюс",
-          description: "Ультимативный люкс для больших групп",
-          images: [
-            "/vehicles/sprinterplus1.jpg",
-            "/vehicles/sprinterplus2.jpg",
-            "/vehicles/sprinterplus3.jpg",
-            "/vehicles/sprinterplus4.jpg"
-          ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
-          features: [
-            "Услуги включены в цену",
-            "ТВ и WiFi и ХОЛОДИЛЬНИК",
-            "Массажное кресло",
-            "БЕСПЛАТНАЯ вода",
-            "Напитки",
-            "Мини-бар (платный)"
-          ],
-          extraFeatures: [
-            "Встреча с табличкой",
-            "Без скрытых платежей"
-          ],
-          price: 30
-        }
-      ];
-    default:
+    case 'tr':
       return [
         {
           id: 1,
@@ -463,17 +74,16 @@ const getVehicles = (lang: string): Vehicle[] => {
           luggageCapacity: "1-5",
           features: [
             "Fiyata Dahil Hizmetler",
-            "TV & WiFi & BUZDOLABI",
             "Bebek Koltuğu",
-            "ÜCRETSİZ Su",
-            "İçecekler",
-            "Mini Bar (Ücretli)"
+            "ÜCRETSİZ Su"
           ],
           extraFeatures: [
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 0
+          price: 0,
+          maxPassengers: 6,
+          extras: []
         },
         {
           id: 2,
@@ -502,7 +112,9 @@ const getVehicles = (lang: string): Vehicle[] => {
             "⭐ Premium Müşteri Desteği"
           ],
           price: 10,
-          isPopular: true
+          isPopular: true,
+          maxPassengers: 16,
+          extras: []
         },
         {
           id: 3,
@@ -515,8 +127,8 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/maybach4.jpg",
             "/vehicles/maybach5.jpg"
           ],
-          passengerCapacity: "1-3",
-          luggageCapacity: "1-3",
+          passengerCapacity: "1-4",
+          luggageCapacity: "1-4",
           features: [
             "Fiyata Dahil Hizmetler",
             "TV & WiFi & BUZDOLABI",
@@ -528,7 +140,9 @@ const getVehicles = (lang: string): Vehicle[] => {
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 25
+          price: 25,
+          maxPassengers: 16,
+          extras: []
         },
         {
           id: 4,
@@ -539,21 +153,20 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/sprinter2.jpg",
             "/vehicles/sprinter3.jpg"
           ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
+          passengerCapacity: "7-13",
+          luggageCapacity: "7-13",
           features: [
             "Fiyata Dahil Hizmetler",
-            "TV & WiFi & BUZDOLABI",
-            "2 Bebek Koltuğu",
             "ÜCRETSİZ Su",
-            "İçecekler",
-            "Mini Bar (Ücretli)"
+            "1 Çocuk Koltuğu"
           ],
           extraFeatures: [
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 20
+          price: 20,
+          maxPassengers: 16,
+          extras: []
         },
         {
           id: 5,
@@ -565,21 +178,437 @@ const getVehicles = (lang: string): Vehicle[] => {
             "/vehicles/sprinterplus3.jpg",
             "/vehicles/sprinterplus4.jpg"
           ],
-          passengerCapacity: "6-8",
-          luggageCapacity: "6-8",
+          passengerCapacity: "6-12",
+          luggageCapacity: "6-12",
           features: [
             "Fiyata Dahil Hizmetler",
             "TV & WiFi & BUZDOLABI",
-            "Masaj Koltuğu",
+            "Çalışma Masası",
             "ÜCRETSİZ Su",
-            "İçecekler",
             "Mini Bar (Ücretli)"
           ],
           extraFeatures: [
             "İsim Tabelası ile Karşılama",
             "Gizli Ücret Yok"
           ],
-          price: 30
+          price: 30,
+          maxPassengers: 16,
+          extras: []
+        }
+      ];
+    case 'de':
+      return [
+        {
+          id: 1,
+          name: "Ekonomisch",
+          description: "Komfortable und wirtschaftliche Reisemöglichkeit",
+          images: [
+            "/vehicles/ekonomik1.jpg",
+            "/vehicles/ekonomik2.jpg",
+            "/vehicles/ekonomik3.jpg"
+          ],
+          passengerCapacity: "1-5",
+          luggageCapacity: "1-5",
+          features: [
+            "Im Preis enthaltene Leistungen",
+            "Babysitz",
+            "GRATIS Wasser"
+          ],
+          extraFeatures: [
+            "Treffen mit Namensschild",
+            "Keine versteckten Kosten"
+          ],
+          price: 0,
+          maxPassengers: 6,
+          extras: []
+        },
+        {
+          id: 2,
+          name: "Premium",
+          description: "Premium-Fahrzeug mit Luxus-Reiseerlebnis",
+          images: [
+            "/vehicles/premium1.jpg",
+            "/vehicles/premium2.jpg",
+            "/vehicles/premium3.jpg",
+            "/vehicles/premium4.jpg"
+          ],
+          passengerCapacity: "1-4",
+          luggageCapacity: "1-4",
+          features: [
+            "✨ Premium-Dienste inklusive",
+            "📱 Hochgeschwindigkeits-WLAN & 4K TV",
+            "❄️ Private Minibar & Kühlschrank",
+            "👶 Luxus-Babysitz",
+            "🌊 Premium-Getränkeservice",
+            "💺 VIP-Massagesitze"
+          ],
+          extraFeatures: [
+            "🎯 VIP-Empfang mit Namensschild",
+            "💎 100% Kundenzufriedenheit",
+            "🏆 Meistgewählte Option",
+            "⭐ Premium-Kundenbetreuung"
+          ],
+          price: 10,
+          isPopular: true,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 3,
+          name: "Maybach",
+          description: "Ultra-Luxus Maybach für VIP-Reisen",
+          images: [
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
+          ],
+          passengerCapacity: "1-3",
+          luggageCapacity: "1-3",
+          features: [
+            "Im Preis enthaltene Leistungen",
+            "TV & WLAN & KÜHLSCHRANK",
+            "Arbeitsplatz",
+            "GRATIS Wasser",
+            "Minibar (kostenpflichtig)"
+          ],
+          extraFeatures: [
+            "Treffen mit Namensschild",
+            "Keine versteckten Kosten"
+          ],
+          price: 25,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 4,
+          name: "VIP Sprinter",
+          description: "Ideale Wahl für große Gruppen",
+          images: [
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
+          ],
+          passengerCapacity: "7-13",
+          luggageCapacity: "7-13",
+          features: [
+            "Im Preis enthaltene Leistungen",
+            "GRATIS Wasser",
+            "1 Kindersitz"
+          ],
+          extraFeatures: [
+            "Treffen mit Namensschild",
+            "Keine versteckten Kosten"
+          ],
+          price: 20,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 5,
+          name: "VIP Sprinter Plus",
+          description: "Ultimatives Luxus-Erlebnis für große Gruppen",
+          images: [
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
+          ],
+          passengerCapacity: "6-8",
+          luggageCapacity: "6-8",
+          features: [
+            "Im Preis enthaltene Leistungen",
+            "TV & WLAN & KÜHLSCHRANK",
+            "Massagesitz",
+            "GRATIS Wasser",
+            "Erfrischungen",
+            "Minibar (kostenpflichtig)"
+          ],
+          extraFeatures: [
+            "Treffen mit Namensschild",
+            "Keine versteckten Kosten"
+          ],
+          price: 30,
+          maxPassengers: 16,
+          extras: []
+        }
+      ];
+    case 'ru':
+      return [
+        {
+          id: 1,
+          name: "Экономичный",
+          description: "Комфортный и экономичный вариант путешествия",
+          images: [
+            "/vehicles/ekonomik1.jpg",
+            "/vehicles/ekonomik2.jpg",
+            "/vehicles/ekonomik3.jpg"
+          ],
+          passengerCapacity: "1-5",
+          luggageCapacity: "1-5",
+          features: [
+            "Услуги включены в цену",
+            "Детское кресло",
+            "БЕСПЛАТНАЯ вода"
+          ],
+          extraFeatures: [
+            "Встреча с табличкой",
+            "Без скрытых платежей"
+          ],
+          price: 0,
+          maxPassengers: 6,
+          extras: []
+        },
+        {
+          id: 2,
+          name: "Премиум",
+          description: "Премиальный автомобиль с люксовым путешествием",
+          images: [
+            "/vehicles/premium1.jpg",
+            "/vehicles/premium2.jpg",
+            "/vehicles/premium3.jpg",
+            "/vehicles/premium4.jpg"
+          ],
+          passengerCapacity: "1-4",
+          luggageCapacity: "1-4",
+          features: [
+            "✨ Премиум-услуги включены",
+            "📱 Высокоскоростной WiFi и 4K ТВ",
+            "❄️ Приватный мини-бар и холодильник",
+            "👶 Люкс детское кресло",
+            "🌊 Премиум-напитки",
+            "💺 VIP-массажные кресла"
+          ],
+          extraFeatures: [
+            "🎯 VIP-встреча с табличкой",
+            "💎 100% удовлетворенность клиентов",
+            "🏆 Самый популярный вариант",
+            "⭐ Премиум-поддержка"
+          ],
+          price: 10,
+          isPopular: true,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 3,
+          name: "Майбах",
+          description: "Ультра-люкс Maybach для VIP-путешествий",
+          images: [
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
+          ],
+          passengerCapacity: "1-3",
+          luggageCapacity: "1-3",
+          features: [
+            "Услуги включены в цену",
+            "ТВ и WiFi и ХОЛОДИЛЬНИК",
+            "Рабочий стол",
+            "БЕСПЛАТНАЯ вода",
+            "Мини-бар (платный)"
+          ],
+          extraFeatures: [
+            "Встреча с табличкой",
+            "Без скрытых платежей"
+          ],
+          price: 25,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 4,
+          name: "VIP Спринтер",
+          description: "Идеальный выбор для больших групп",
+          images: [
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
+          ],
+          passengerCapacity: "7-13",
+          luggageCapacity: "7-13",
+          features: [
+            "Услуги включены в цену",
+            "БЕСПЛАТНАЯ вода",
+            "1 детское кресло"
+          ],
+          extraFeatures: [
+            "Встреча с табличкой",
+            "Без скрытых платежей"
+          ],
+          price: 20,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 5,
+          name: "VIP Спринтер Плюс",
+          description: "Ультимативный люкс для больших групп",
+          images: [
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
+          ],
+          passengerCapacity: "6-8",
+          luggageCapacity: "6-8",
+          features: [
+            "Услуги включены в цену",
+            "ТВ и WiFi и ХОЛОДИЛЬНИК",
+            "Массажное кресло",
+            "БЕСПЛАТНАЯ вода",
+            "Напитки",
+            "Мини-бар (платный)"
+          ],
+          extraFeatures: [
+            "Встреча с табличкой",
+            "Без скрытых платежей"
+          ],
+          price: 30,
+          maxPassengers: 16,
+          extras: []
+        }
+      ];
+    case 'en':
+    default:
+      return [
+        {
+          id: 1,
+          name: "Economic",
+          description: "Comfortable and economical travel option",
+          images: [
+            "/vehicles/ekonomik1.jpg",
+            "/vehicles/ekonomik2.jpg",
+            "/vehicles/ekonomik3.jpg"
+          ],
+          passengerCapacity: "1-5",
+          luggageCapacity: "1-5",
+          features: [
+            "Services Included in Price",
+            "Baby Seat",
+            "FREE Water"
+          ],
+          extraFeatures: [
+            "Meeting with Name Sign",
+            "No Hidden Costs"
+          ],
+          price: 0,
+          maxPassengers: 6,
+          extras: []
+        },
+        {
+          id: 2,
+          name: "Premium",
+          description: "Premium vehicle with luxury travel experience",
+          images: [
+            "/vehicles/premium1.jpg",
+            "/vehicles/premium2.jpg",
+            "/vehicles/premium3.jpg",
+            "/vehicles/premium4.jpg"
+          ],
+          passengerCapacity: "1-4",
+          luggageCapacity: "1-4",
+          features: [
+            "✨ Premium Services Included",
+            "📱 High-Speed WiFi & 4K TV",
+            "❄️ Private Mini Bar & Fridge",
+            "👶 Luxury Baby Seat",
+            "🌊 Premium Beverage Service",
+            "💺 Massage VIP Seats"
+          ],
+          extraFeatures: [
+            "🎯 VIP Welcome with Name Sign",
+            "💎 100% Customer Satisfaction",
+            "🏆 Most Preferred Option",
+            "⭐ Premium Customer Support"
+          ],
+          price: 10,
+          isPopular: true,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 3,
+          name: "Maybach",
+          description: "Ultra luxury Maybach for VIP travel",
+          images: [
+            "/vehicles/maybach1.jpg",
+            "/vehicles/maybach2.jpg",
+            "/vehicles/maybach3.jpg",
+            "/vehicles/maybach4.jpg",
+            "/vehicles/maybach5.jpg"
+          ],
+          passengerCapacity: "1-3",
+          luggageCapacity: "1-3",
+          features: [
+            "Services Included in Price",
+            "TV & WiFi & FRIDGE",
+            "Work Desk",
+            "FREE Water",
+            "Mini Bar (Paid)"
+          ],
+          extraFeatures: [
+            "Meeting with Name Sign",
+            "No Hidden Costs"
+          ],
+          price: 25,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 4,
+          name: "VIP Sprinter",
+          description: "Ideal choice for large groups",
+          images: [
+            "/vehicles/sprinter1.jpg",
+            "/vehicles/sprinter2.jpg",
+            "/vehicles/sprinter3.jpg"
+          ],
+          passengerCapacity: "7-13",
+          luggageCapacity: "7-13",
+          features: [
+            "Services Included in Price",
+            "FREE Water",
+            "1 Child Seat"
+          ],
+          extraFeatures: [
+            "Meeting with Name Sign",
+            "No Hidden Costs"
+          ],
+          price: 20,
+          maxPassengers: 16,
+          extras: []
+        },
+        {
+          id: 5,
+          name: "VIP Sprinter Plus",
+          description: "Ultimate luxury experience for large groups",
+          images: [
+            "/vehicles/sprinterplus1.jpg",
+            "/vehicles/sprinterplus2.jpg",
+            "/vehicles/sprinterplus3.jpg",
+            "/vehicles/sprinterplus4.jpg"
+          ],
+          passengerCapacity: "6-8",
+          luggageCapacity: "6-8",
+          features: [
+            "Services Included in Price",
+            "TV & WiFi & FRIDGE",
+            "Massage Seat",
+            "FREE Water",
+            "Refreshments",
+            "Mini Bar (Paid)"
+          ],
+          extraFeatures: [
+            "Meeting with Name Sign",
+            "No Hidden Costs"
+          ],
+          price: 30,
+          maxPassengers: 16,
+          extras: []
         }
       ];
   }
@@ -587,31 +616,31 @@ const getVehicles = (lang: string): Vehicle[] => {
 
 const getExtraServices = (lang: string): ExtraService[] => {
   switch (lang) {
-    case 'en':
+    case 'tr':
       return [
         {
           id: 1,
-          name: "Flower Bouquet",
+          name: "Buket Çiçek",
           price: 30,
-          description: "Beautiful flower bouquet"
+          description: "Güzel buket çiçek"
         },
         {
           id: 2,
-          name: "Champagne",
+          name: "Şişe Şampanya",
           price: 25,
-          description: "Premium champagne"
+          description: "Premium şampanya"
         },
         {
           id: 3,
-          name: "Fruit Basket",
+          name: "Meyve Tabağı",
           price: 15,
-          description: "Fresh fruit basket"
+          description: "Taze meyve tabağı"
         },
         {
           id: 4,
-          name: "Flying Balloon",
+          name: "Uçan Balon",
           price: 10,
-          description: "Decorative balloon"
+          description: "Dekoratif balon"
         }
       ];
     case 'de':
@@ -668,31 +697,32 @@ const getExtraServices = (lang: string): ExtraService[] => {
           description: "Декоративный шар"
         }
       ];
+    case 'en':
     default:
       return [
         {
           id: 1,
-          name: "Buket Çiçek",
+          name: "Flower Bouquet",
           price: 30,
-          description: "Güzel buket çiçek"
+          description: "Beautiful flower bouquet"
         },
         {
           id: 2,
-          name: "Şişe Şampanya",
+          name: "Champagne",
           price: 25,
-          description: "Premium şampanya"
+          description: "Premium champagne"
         },
         {
           id: 3,
-          name: "Meyve Tabağı",
+          name: "Fruit Basket",
           price: 15,
-          description: "Taze meyve tabağı"
+          description: "Fresh fruit basket"
         },
         {
           id: 4,
-          name: "Uçan Balon",
+          name: "Flying Balloon",
           price: 10,
-          description: "Dekoratif balon"
+          description: "Decorative balloon"
         }
       ];
   }
@@ -701,33 +731,33 @@ const getExtraServices = (lang: string): ExtraService[] => {
 // Trip type selection component
 const TripTypeSelector = ({ vehicleId, selectedTripType, onTripTypeChange }: TripTypeSelectorProps) => {
   const params = useParams();
-  const lang = (typeof params.lang === 'string' ? params.lang : '') || '';
+  const lang = (typeof params.lang === 'string' ? params.lang : '') || 'en';
   
   const getText = (lang: string) => {
     switch (lang) {
       case 'tr':
         return {
-          oneWay: 'Tek Yön',
           roundTrip: 'Gidiş-Dönüş',
-          discount: 'indirim'
+          discount: 'indirim',
+          discountNote: 'Gidiş-Dönüş seçeneğinde 5$ indirim!'
         };
       case 'de':
         return {
-          oneWay: 'Einfache Fahrt',
           roundTrip: 'Hin und Zurück',
-          discount: 'Rabatt'
+          discount: 'Rabatt',
+          discountNote: '5$ Rabatt bei Hin- und Rückfahrt!'
         };
       case 'ru':
         return {
-          oneWay: 'В одну сторону',
           roundTrip: 'Туда и обратно',
-          discount: 'скидка'
+          discount: 'скидка',
+          discountNote: 'Скидка 5$ при поездке туда и обратно!'
         };
       default:
         return {
-          oneWay: 'One Way',
           roundTrip: 'Round Trip',
-          discount: 'discount'
+          discount: 'discount',
+          discountNote: '5$ discount on round trip!'
         };
     }
   };
@@ -740,24 +770,8 @@ const TripTypeSelector = ({ vehicleId, selectedTripType, onTripTypeChange }: Tri
         <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-1.5">
           <div className="flex items-center gap-1">
             <button
-              onClick={() => onTripTypeChange('one-way')}
-              className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-                selectedTripType === 'one-way'
-                  ? 'bg-red-500 text-white'
-                  : 'text-gray-300 hover:bg-gray-800'
-              }`}
-            >
-              {selectedTripType === 'one-way' && (
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></span>
-              )}
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-              {texts.oneWay}
-            </button>
-            <button
-              onClick={() => onTripTypeChange('round-trip')}
-              className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+              onClick={() => onTripTypeChange(selectedTripType === 'round-trip' ? 'one-way' : 'round-trip')}
+              className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5 w-full ${
                 selectedTripType === 'round-trip'
                   ? 'bg-red-500 text-white'
                   : 'text-gray-300 hover:bg-gray-800'
@@ -772,15 +786,82 @@ const TripTypeSelector = ({ vehicleId, selectedTripType, onTripTypeChange }: Tri
               {texts.roundTrip}
             </button>
           </div>
-          {selectedTripType === 'round-trip' && (
-            <div className="text-xs text-green-400 text-center mt-1 font-medium">
-              -$5 {texts.discount}
-            </div>
-          )}
+          <div className="text-xs text-green-400 text-center mt-1 font-medium">
+            {texts.discountNote}
+          </div>
         </div>
       </div>
     </div>
   );
+};
+
+const getText = (lang: string) => {
+  switch (lang) {
+    case 'tr':
+      return {
+        roundTrip: 'Gidiş-Dönüş',
+        discount: 'indirim',
+        discountNote: 'Gidiş-Dönüş seçeneğinde 5$ indirim!',
+        vehiclePrice: 'Araç Ücreti',
+        passenger: 'Yolcu',
+        luggage: 'Bavul',
+        extraServices: 'Ek Hizmetler',
+        selectedServices: 'Seçilen Hizmetler',
+        extrasTotal: 'Ek Hizmet Toplamı',
+        totalAmount: 'Toplam Tutar',
+        bookNow: 'HEMEN REZERVASYON YAP',
+        makeReservation: 'REZERVASYON YAP',
+        mostPreferred: 'En Çok Tercih Edilen'
+      };
+    case 'de':
+      return {
+        roundTrip: 'Hin und Zurück',
+        discount: 'Rabatt',
+        discountNote: '5$ Rabatt bei Hin- und Rückfahrt!',
+        vehiclePrice: 'Fahrzeugpreis',
+        passenger: 'Passagier',
+        luggage: 'Gepäck',
+        extraServices: 'Zusätzliche Dienste',
+        selectedServices: 'Ausgewählte Dienste',
+        extrasTotal: 'Zusatzleistungen Gesamt',
+        totalAmount: 'Gesamtbetrag',
+        bookNow: 'JETZT BUCHEN',
+        makeReservation: 'RESERVIERUNG VORNEHMEN',
+        mostPreferred: 'Am meisten bevorzugt'
+      };
+    case 'ru':
+      return {
+        roundTrip: 'Туда и обратно',
+        discount: 'скидка',
+        discountNote: 'Скидка 5$ при поездке туда и обратно!',
+        vehiclePrice: 'Цена автомобиля',
+        passenger: 'Пассажир',
+        luggage: 'Багаж',
+        extraServices: 'Дополнительные услуги',
+        selectedServices: 'Выбранные услуги',
+        extrasTotal: 'Сумма доп. услуг',
+        totalAmount: 'Итого к оплате',
+        bookNow: 'ЗАБРОНИРОВАТЬ СЕЙЧАС',
+        makeReservation: 'СДЕЛАТЬ БРОНИРОВАНИЕ',
+        mostPreferred: 'Самый предпочтительный'
+      };
+    default:
+      return {
+        roundTrip: 'Round Trip',
+        discount: 'discount',
+        discountNote: '5$ discount on round trip!',
+        vehiclePrice: 'Vehicle Price',
+        passenger: 'Passenger',
+        luggage: 'Luggage',
+        extraServices: 'Extra Services',
+        selectedServices: 'Selected Services',
+        extrasTotal: 'Extras Total',
+        totalAmount: 'Total Amount',
+        bookNow: 'BOOK NOW',
+        makeReservation: 'MAKE RESERVATION',
+        mostPreferred: 'Most Preferred'
+      };
+  }
 };
 
 const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: VehicleSelectProps) => {
@@ -788,132 +869,144 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
   const [selectedExtrasMap, setSelectedExtrasMap] = useState<{ [key: number]: number[] }>({});
   const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: number]: number }>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [tripTypes, setTripTypes] = useState<{ [key: number]: TripType }>({});
+  const { tripType, setTripType } = useTripType();
+  const [step1Data, setStep1Data] = useState<{
+    pickupLocation: string;
+    dropoffLocation: string;
+    adults: number;
+    children: number;
+    currency: string;
+    price: number;
+    tripType: 'one-way' | 'round-trip';
+  } | null>(null);
   const params = useParams();
-  const lang = (typeof params.lang === 'string' ? params.lang : '') || '';
+  const pathname = window.location.pathname;
+  const router = useRouter();
+  const t = translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr']
+  
+  useEffect(() => {
+    const savedStep1 = localStorage.getItem('reservationStep1');
+    if (savedStep1) {
+      const parsedData = JSON.parse(savedStep1);
+      setStep1Data(parsedData);
+    }
+  }, []);
 
+  // URL'den dil parametresini belirle
+  let lang = 'tr'; // Varsayılan dil Türkçe
+  if (pathname.startsWith('/de/')) {
+    lang = 'de';
+  } else if (pathname.startsWith('/ru/')) {
+    lang = 'ru';
+  } else if (pathname.startsWith('/en/')) {
+    lang = 'en';
+  }
+
+  // URL'den dil parametresini al ve doğru dildeki araçları getir
   const vehicles = getVehicles(lang);
   const extraServices = getExtraServices(lang);
-
-  const getText = (lang: string) => {
-    switch (lang) {
-      case 'tr':
-        return {
-          oneWay: 'Tek Yön',
-          roundTrip: 'Gidiş-Dönüş',
-          discount: 'indirim',
-          vehiclePrice: 'Araç Ücreti'
-        };
-      case 'de':
-        return {
-          oneWay: 'Einfache Fahrt',
-          roundTrip: 'Hin und Zurück',
-          discount: 'Rabatt',
-          vehiclePrice: 'Fahrzeugpreis'
-        };
-      case 'ru':
-        return {
-          oneWay: 'В одну сторону',
-          roundTrip: 'Туда и обратно',
-          discount: 'скидка',
-          vehiclePrice: 'Цена автомобиля'
-        };
-      default:
-        return {
-          oneWay: 'One Way',
-          roundTrip: 'Round Trip',
-          discount: 'discount',
-          vehiclePrice: 'Vehicle Price'
-        };
-    }
-  };
-
-  const handleVehicleSelect = (vehicleId: number) => {
-    const selectedVehicle = vehicles.find(v => v.id === vehicleId);
-    if (selectedVehicle) {
-      const vehicleExtras = selectedExtrasMap[vehicleId] || [];
-      const selectedExtrasDetails = vehicleExtras.map(id => {
-        const service = extraServices.find(s => s.id === id);
-        return {
-          name: service?.name || '',
-          price: service?.price || 0
-        };
-      });
-
-      // Ekstra hizmetlerin toplam fiyatı
-      const extrasTotal = selectedExtrasDetails.reduce((sum, extra) => sum + extra.price, 0);
-
-      // Araç fiyatı + Güzergah fiyatı
-      const basePrice = initialPrice + selectedVehicle.price;
-
-      // Gidiş-dönüş kontrolü
-      const tripType = getTripType(vehicleId);
-      let finalPrice = basePrice;
-
-      if (tripType === 'round-trip') {
-        // Gidiş-dönüş seçiliyse: (Temel fiyat × 2) - 5$ indirim
-        finalPrice = (basePrice * 2) - 5;
-      }
-
-      // Ekstra hizmetleri ekle
-      finalPrice += extrasTotal;
-
-      // Seçimleri step3'e gönder
-      onVehicleSelect({
-        vehicleId,
-        extras: vehicleExtras,
-        vehiclePrice: finalPrice, // Toplam fiyat
-        vehicleName: selectedVehicle.name,
-        selectedExtras: selectedExtrasDetails
-      });
-
-      // URL'i güncelle
-      const url = new URL(window.location.href);
-      url.searchParams.set('tripType', tripType);
-      url.searchParams.set('basePrice', basePrice.toString());
-      url.searchParams.set('extrasTotal', extrasTotal.toString());
-      url.searchParams.set('finalPrice', finalPrice.toString());
-      window.history.replaceState({}, '', url.toString());
-    }
-  };
+  const texts = getText(lang);
 
   const handleExtraServiceToggle = (vehicleId: number, serviceId: number) => {
-    const service = getExtraServices(lang).find(s => s.id === serviceId);
-    if (!service) return;
-
-    if (serviceId === 1) {
-      const vehicle = getVehicles(lang).find(v => v.id === vehicleId);
-      if (!vehicle) return;
-
-      const roundTripPrice = (initialPrice * 2) - 5; // Gidiş-dönüş için toplam fiyatın 2 katından 5 dolar düşürülür
-      service.price = roundTripPrice;
-    }
-
     setSelectedExtrasMap(prev => {
-      const exists = prev[vehicleId]?.some(e => e === serviceId) || false;
+      const currentExtras = prev[vehicleId] || [];
+      const exists = currentExtras.includes(serviceId);
+      
       if (exists) {
-      return {
-        ...prev,
-          [vehicleId]: prev[vehicleId]?.filter(e => e !== serviceId) || []
+        // Remove the service if it exists
+        return {
+          ...prev,
+          [vehicleId]: currentExtras.filter(id => id !== serviceId)
+        };
+      } else {
+        // Add the service if it doesn't exist
+        return {
+          ...prev,
+          [vehicleId]: [...currentExtras, serviceId]
         };
       }
-      return {
-        ...prev,
-        [vehicleId]: [...prev[vehicleId] || [], serviceId]
-      };
     });
   };
 
-  const handleTripTypeChange = (vehicleId: string, type: TripType) => {
-    const numericId = parseInt(vehicleId, 10);
-    setTripTypes(prev => ({ ...prev, [numericId]: type }));
+  const handleTripTypeChange = (vehicleId: number, type: TripType) => {
+    setTripType(type);
+    
     if (onTripTypeChange) {
-      onTripTypeChange(numericId, type);
+      onTripTypeChange(vehicleId, type);
     }
   };
 
-  const getTripType = (vehicleId: number): TripType => {
-    return tripTypes[vehicleId] || 'one-way';
+  const calculateTotalPrice = (vehicle: Vehicle, extras: { name: string; price: number }[], vehicleId: number) => {
+    // Ekstra hizmetlerin toplam fiyatı
+    const extrasTotal = extras.reduce((sum, extra) => sum + extra.price, 0);
+    
+    let finalPrice;
+
+    if (tripType === 'round-trip') {
+      // Gidiş-dönüş seçiliyse: (Güzergah fiyatı + Araç fiyatı) × 2 - 5$ indirim + Ekstra hizmetler
+      finalPrice = ((initialPrice + vehicle.price) * 2) - 5 + extrasTotal;
+    } else {
+      // Tek yön seçiliyse: Güzergah fiyatı + Araç fiyatı + Ekstra hizmetler
+      finalPrice = initialPrice + vehicle.price + extrasTotal;
+    }
+    
+    return finalPrice;
+  };
+
+  const handleVehicleSelect = (vehicle: Vehicle) => {
+    const vehicleExtras = selectedExtrasMap[vehicle.id] || [];
+    const selectedExtrasDetails = vehicleExtras.map(id => {
+      const service = extraServices.find(s => s.id === id);
+      return {
+        name: service?.name || '',
+        price: service?.price || 0
+      };
+    });
+
+    const extrasTotal = selectedExtrasDetails.reduce((sum, extra) => sum + extra.price, 0);
+    
+    // Fiyat hesaplama
+    const vehicleTotal = calculateTotalPrice(vehicle, selectedExtrasDetails, vehicle.id);
+
+    const step2Data = {
+      vehicleId: vehicle.id,
+      extras: vehicleExtras,
+      vehiclePrice: vehicle.price,
+      vehicleName: vehicle.name,
+      selectedExtras: selectedExtrasDetails,
+      vehicleImage: vehicle.images[getCurrentImageIndex(vehicle.id)],
+      tripType,
+    };
+
+    localStorage.setItem('reservationStep2', JSON.stringify(step2Data));
+
+    // Dil kodunu path'ten al
+    const path = window.location.pathname;
+    let langCode = '';
+    if (path.startsWith('/en/')) {
+      langCode = 'en';
+    } else if (path.startsWith('/de/')) {
+      langCode = 'de';
+    } else if (path.startsWith('/ru/')) {
+      langCode = 'ru';
+    }
+
+    // Dil koduna göre yönlendirme yap
+    let nextStepPath;
+    switch (langCode) {
+      case 'en':
+        nextStepPath = '/en/reservation/step3';
+        break;
+      case 'de':
+        nextStepPath = '/de/reservierung/step3';
+        break;
+      case 'ru':
+        nextStepPath = '/ru/rezervatsiya/step3';
+        break;
+      default:
+        nextStepPath = '/rezervasyon/step3';
+    }
+    router.push(nextStepPath);
   };
 
   // Resim navigasyonu
@@ -935,32 +1028,9 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
     return currentImageIndices[vehicleId] || 0;
   };
 
-  // Calculate total price including trip type
-  const calculateTotalPrice = (vehicle: Vehicle, extras: { name: string; price: number }[], vehicleId: number) => {
-    // Ekstra hizmetlerin toplam fiyatı
-    const extrasTotal = extras.reduce((sum, extra) => sum + extra.price, 0);
-    
-    // Araç fiyatı + Güzergah fiyatı
-    const basePrice = initialPrice + vehicle.price;
-    
-    // Gidiş-dönüş kontrolü
-    const tripType = getTripType(vehicleId);
-    let finalPrice = basePrice;
-    
-    if (tripType === 'round-trip') {
-      // Gidiş-dönüş seçiliyse: (Temel fiyat × 2) - 5$ indirim
-      finalPrice = (basePrice * 2) - 5;
-    }
-    
-    // Ekstra hizmetleri ekle
-    finalPrice += extrasTotal;
-    
-    return finalPrice;
-  };
-
   return (
     <div className="max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] 2xl:max-w-[80vw] mx-auto space-y-3 p-2">
-      {vehicles.map((vehicle) => {
+      {vehicles.map((vehicle, index) => {
         const currentImageIndex = getCurrentImageIndex(vehicle.id);
         const vehicleExtras = selectedExtrasMap[vehicle.id] || [];
         const selectedExtrasDetails = vehicleExtras.map(id => {
@@ -974,42 +1044,26 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
         const extrasTotal = selectedExtrasDetails.reduce((sum, extra) => sum + extra.price, 0);
         const vehicleTotal = calculateTotalPrice(vehicle, selectedExtrasDetails, vehicle.id);
         const isSelected = selectedVehicleId === vehicle.id;
-        const tripType = getTripType(vehicle.id);
-        const texts = getText(lang);
 
         return (
-          <div key={vehicle.id} className={`bg-black/80 backdrop-blur-sm rounded-xl p-2 lg:p-3 border ${
-              vehicle.id === selectedVehicleId
-                ? vehicle.isPopular
-                  ? 'border-blue-500 ring-2 ring-blue-500'
-                  : 'border-red-500 ring-2 ring-red-500'
-                : vehicle.isPopular
+          <div
+            key={vehicle.id}
+            className={`relative bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border transition-all duration-300 ${
+              selectedVehicleId === vehicle.id 
+                ? 'border-blue-500' 
+                : index === 1 || index === 2
                 ? 'border-blue-500/50 hover:border-blue-500'
                 : 'border-gray-800 hover:border-red-500'
-          } transition-all duration-300 relative`}>
-            {/* Vehicle Price Display */}
-            <div className="absolute top-2 right-2 z-10">
-              <div className={`px-3 py-1.5 rounded-lg ${
-                vehicle.isPopular
-                  ? 'bg-gradient-to-r from-blue-500/80 to-blue-600/80'
-                  : 'bg-red-500/80'
-              } backdrop-blur-sm text-white font-medium text-sm flex items-center gap-1.5`}>
-                <span className="text-gray-200">{texts.vehiclePrice}:</span>
-                <span className="font-bold">${vehicle.price}</span>
+            } ${index === 1 ? 'shadow-blue-500/20' : ''}`}
+          >
+            {index === 1 && (
+              <div className="absolute -top-3 -left-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                {texts.mostPreferred}
               </div>
-            </div>
-
-            {vehicle.isPopular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg z-10 whitespace-nowrap flex items-center gap-2">
-                  <span className="animate-pulse">👑</span>
-                <span>Most Preferred</span>
-                  <span className="animate-pulse">👑</span>
-                </div>
             )}
-            
             <div className="grid grid-cols-12 gap-2 lg:gap-4">
-              {/* Araç Görseli */}
-              <div className="col-span-12 md:col-span-3 relative h-[200px]">
+              {/* Vehicle Image */}
+              <div className="col-span-12 md:col-span-3 relative h-[200px] md:h-[250px]">
                 <div className="absolute inset-0 flex items-center justify-between z-10 px-2">
                   <button 
                     onClick={(e) => {
@@ -1042,20 +1096,20 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                   {vehicle.images.map((_, idx) => (
                     <button
                       key={idx}
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                        currentImageIndex === idx ? 'bg-white' : 'bg-white/50'
-                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setCurrentImageIndices(prev => ({ ...prev, [vehicle.id]: idx }));
                       }}
+                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                        currentImageIndex === idx ? 'bg-white' : 'bg-white/50'
+                      }`}
                     />
                   ))}
                 </div>
               </div>
 
-              {/* Özellikler */}
-              <div className="col-span-12 md:col-span-6 space-y-3">
+              {/* Features */}
+              <div className="col-span-12 md:col-span-6 space-y-3 mt-4 md:mt-0">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className={`text-xl font-bold ${
@@ -1071,24 +1125,11 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                   <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-1.5">
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => handleTripTypeChange(vehicle.id.toString(), 'one-way')}
-                        className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-                          tripType === 'one-way'
-                            ? 'bg-red-500 text-white'
-                            : 'text-gray-300 hover:bg-gray-800'
-                        }`}
-                      >
-                        {tripType === 'one-way' && (
-                          <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></span>
-                        )}
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                        {texts.oneWay}
-                      </button>
-                      <button
-                        onClick={() => handleTripTypeChange(vehicle.id.toString(), 'round-trip')}
-                        className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTripTypeChange(vehicle.id, tripType === 'round-trip' ? 'one-way' : 'round-trip');
+                        }}
+                        className={`relative px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5 w-full ${
                           tripType === 'round-trip'
                             ? 'bg-red-500 text-white'
                             : 'text-gray-300 hover:bg-gray-800'
@@ -1102,27 +1143,25 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                         </svg>
                         {texts.roundTrip}
                       </button>
-                      </div>
-                    {tripType === 'round-trip' && (
-                      <div className="text-xs text-green-400 text-center mt-1 font-medium">
-                        -$5 {texts.discount}
-                      </div>
-                    )}
+                    </div>
+                    <div className="text-xs text-green-400 text-center mt-1 font-medium">
+                      {texts.discountNote}
+                    </div>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 p-2 rounded-lg bg-gray-900/50">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm">Passenger:</span>
+                    <span className="text-gray-400 text-sm">{texts.passenger}:</span>
                     <span className="font-medium text-white">{vehicle.passengerCapacity}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm">Luggage:</span>
+                    <span className="text-gray-400 text-sm">{texts.luggage}:</span>
                     <span className="font-medium text-white">{vehicle.luggageCapacity}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                   {vehicle.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2 text-sm">
                       {vehicle.isPopular ? (
@@ -1140,7 +1179,7 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                 </div>
 
                 {vehicle.extraFeatures.length > 0 && (
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                     {vehicle.extraFeatures.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm">
                         {vehicle.isPopular ? (
@@ -1159,8 +1198,8 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                 )}
               </div>
 
-              {/* Ek Hizmetler */}
-              <div className="col-span-12 md:col-span-3 text-white mt-16 md:mt-8">
+              {/* Extra Services */}
+              <div className="col-span-12 md:col-span-3 text-white mt-4 md:mt-8">
                 <div className={`rounded-lg p-2.5 ${
                   vehicle.isPopular 
                     ? 'bg-gradient-to-br from-blue-900/50 to-blue-800/30 border border-blue-500/20' 
@@ -1170,31 +1209,28 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    {lang === 'tr' ? 'Ek Hizmetler' : 
-                     lang === 'de' ? 'Zusätzliche Dienste' : 
-                     lang === 'ru' ? 'Дополнительные услуги' : 
-                     'Extra Services'}
+                    {texts.extraServices}
                   </h4>
                   <div className="space-y-1 mt-2">
-                    {extraServices.map((service) => (
-                      <div key={service.id} 
+                    {extraServices.map((extra) => (
+                      <div key={extra.id} 
                         className="flex items-center justify-between p-1.5 rounded-md bg-black/30 hover:bg-black/40 transition-colors group">
                         <label className="flex items-center gap-1.5 cursor-pointer w-full">
-                            <input
-                              type="checkbox"
-                              checked={vehicleExtras.includes(service.id)}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                handleExtraServiceToggle(vehicle.id, service.id);
-                              }}
+                          <input
+                            type="checkbox"
+                            checked={vehicleExtras.includes(extra.id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleExtraServiceToggle(vehicle.id, extra.id);
+                            }}
                             className="w-3 h-3 rounded border-gray-600 bg-gray-700 text-red-500 focus:ring-red-500"
                           />
                           <div className="flex justify-between w-full">
                             <span className="text-[11px] text-gray-300 group-hover:text-white transition-colors">
-                              {service.name}
+                              {extra.name}
                             </span>
                             <span className="text-[11px] text-gray-400 group-hover:text-gray-200 transition-colors">
-                              +{service.price}$
+                              +{extra.price}$
                             </span>
                           </div>
                         </label>
@@ -1205,10 +1241,7 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                   {selectedExtrasDetails.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-gray-700">
                       <div className="text-[11px] text-gray-400 mb-1">
-                        {lang === 'tr' ? 'Seçilen Hizmetler' : 
-                         lang === 'de' ? 'Ausgewählte Dienste' : 
-                         lang === 'ru' ? 'Выбранные услуги' : 
-                         'Selected Services'}:
+                        {texts.selectedServices}:
                       </div>
                       <div className="space-y-1">
                         {selectedExtrasDetails.map((extra, idx) => (
@@ -1219,10 +1252,7 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                         ))}
                         <div className="flex justify-between text-[11px] font-medium pt-1 border-t border-gray-700">
                           <span className="text-gray-300">
-                            {lang === 'tr' ? 'Ek Hizmet Toplamı' : 
-                             lang === 'de' ? 'Zusatzleistungen Gesamt' : 
-                             lang === 'ru' ? 'Сумма доп. услуг' : 
-                             'Extras Total'}:
+                            {texts.extrasTotal}:
                           </span>
                           <span className="text-gray-300">+{extrasTotal}$</span>
                         </div>
@@ -1234,10 +1264,7 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                 <div className="mt-3">
                   <div className="flex justify-between items-baseline mb-2">
                     <span className="text-xs text-gray-300">
-                      {lang === 'tr' ? 'Toplam Tutar' : 
-                       lang === 'de' ? 'Gesamtbetrag' : 
-                       lang === 'ru' ? 'Итого к оплате' : 
-                       'Total Amount'}:
+                      {texts.totalAmount}:
                     </span>
                     <div className="flex items-baseline gap-1">
                       <span className={`text-2xl font-bold ${
@@ -1254,23 +1281,15 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleVehicleSelect(vehicle.id);
+                      handleVehicleSelect(vehicle);
                     }}
-                    className={`w-full py-2 rounded-lg text-xs font-semibold transition-all transform hover:scale-[1.02] active:scale-[0.98] ${
+                    className={`w-full py-2 rounded-lg text-xs font-semibold transition-all ${
                       vehicle.isPopular
                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25'
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                   >
-                    {vehicle.isPopular ? 
-                      (lang === 'tr' ? 'HEMEN REZERVASYON YAP' : 
-                       lang === 'de' ? 'JETZT BUCHEN' : 
-                       lang === 'ru' ? 'ЗАБРОНИРОВАТЬ СЕЙЧАС' : 
-                       'BOOK NOW') : 
-                      (lang === 'tr' ? 'REZERVASYON YAP' : 
-                       lang === 'de' ? 'RESERVIERUNG VORNEHMEN' : 
-                       lang === 'ru' ? 'СДЕЛАТЬ БРОНИРОВАНИЕ' : 
-                       'MAKE RESERVATION')}
+                    {selectedVehicleId === vehicle.id ? t.selected : t.select}
                   </button>
                 </div>
               </div>

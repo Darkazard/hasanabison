@@ -8,6 +8,8 @@ import { MapPinIcon, UserIcon, CurrencyDollarIcon } from '@heroicons/react/24/ou
 import VehicleList from '@/components/Vehicle/VehicleList'
 import Image from 'next/image'
 import PriceList from './PriceList'
+import { routes, germanRoutes } from '@/data/routes'
+import { useTranslations } from 'next-intl'
 
 interface Step1Data {
   pickupLocation: string
@@ -29,37 +31,9 @@ interface Route {
   from: string
   to: string
   price: number
+  euroPrice?: number
 }
 
-const routes: Route[] = [
-  { from: 'Antalya Havalimanı', to: 'Konyaaltı', price: 35 },
-  { from: 'Antalya Havalimanı', to: 'Lara', price: 35 },
-  { from: 'Antalya Havalimanı', to: 'Kundu', price: 35 },
-  { from: 'Antalya Havalimanı', to: 'Kaleiçi', price: 40 },
-  { from: 'Antalya Havalimanı', to: 'Beldibi', price: 50 },
-  { from: 'Antalya Havalimanı', to: 'Göynük', price: 50 },
-  { from: 'Antalya Havalimanı', to: 'Kemer', price: 55 },
-  { from: 'Antalya Havalimanı', to: 'Kiriş', price: 55 },
-  { from: 'Antalya Havalimanı', to: 'Çamyuva', price: 60 },
-  { from: 'Antalya Havalimanı', to: 'Tekirova', price: 60 },
-  { from: 'Antalya Havalimanı', to: 'Çıralı', price: 80 },
-  { from: 'Antalya Havalimanı', to: 'Olympos', price: 80 },
-  { from: 'Antalya Havalimanı', to: 'Kaş', price: 140 },
-  { from: 'Antalya Havalimanı', to: 'Kadriye Belek', price: 40 },
-  { from: 'Antalya Havalimanı', to: 'Bogazkent', price: 45 },
-  { from: 'Antalya Havalimanı', to: 'Side', price: 50 },
-  { from: 'Antalya Havalimanı', to: 'Kızılağaç', price: 60 },
-  { from: 'Antalya Havalimanı', to: 'Kızılot', price: 60 },
-  { from: 'Antalya Havalimanı', to: 'Okurcalar', price: 60 },
-  { from: 'Antalya Havalimanı', to: 'Türkler', price: 65 },
-  { from: 'Antalya Havalimanı', to: 'Konaklı', price: 65 },
-  { from: 'Antalya Havalimanı', to: 'Alanya merkez', price: 70 },
-  { from: 'Antalya Havalimanı', to: 'Mahmutlar', price: 75 },
-  { from: 'Antalya Havalimanı', to: 'Kargıcak', price: 75 },
-  { from: 'Antalya Havalimanı', to: 'Fethiye', price: 160 }
-]
-
-// Çeviri nesnesi
 const translations = {
   tr: {
     from: 'Nereden ?',
@@ -81,7 +55,6 @@ const translations = {
     socialMedia: 'SOSYAL MEDYA',
     pleaseReview: 'Lütfen inceleyiniz',
     pleaseReadReviews: 'Lütfen inceleyiniz',
-    // Duyuru metinleri
     announcement: {
       title: 'LÜTFEN OKUYUNUZ !!!',
       greeting: 'Değerli misafirlerimiz',
@@ -111,7 +84,6 @@ const translations = {
     socialMedia: 'SOCIAL MEDIA',
     pleaseReview: 'Please review',
     pleaseReadReviews: 'Please read reviews',
-    // Announcement texts
     announcement: {
       title: 'PLEASE READ !!!',
       greeting: 'Dear guests',
@@ -141,7 +113,6 @@ const translations = {
     socialMedia: 'SOZIALE MEDIEN',
     pleaseReview: 'Bitte überprüfen',
     pleaseReadReviews: 'Bitte Bewertungen lesen',
-    // Ankündigungstexte
     announcement: {
       title: 'BITTE LESEN !!!',
       greeting: 'Liebe Gäste',
@@ -171,7 +142,6 @@ const translations = {
     socialMedia: 'СОЦИАЛЬНЫЕ СЕТИ',
     pleaseReview: 'Пожалуйста, проверьте',
     pleaseReadReviews: 'Пожалуйста, прочитайте отзывы',
-    // Тексты объявления
     announcement: {
       title: 'ПОЖАЛУЙСТА, ПРОЧИТАЙТЕ !!!',
       greeting: 'Дорогие гости',
@@ -183,7 +153,6 @@ const translations = {
   }
 }
 
-// Para birimleri çevirisi
 const currencyTranslations = {
   tr: [
     { code: 'TRY', symbol: '₺', name: 'Türk Lirası' },
@@ -207,6 +176,35 @@ const currencyTranslations = {
   ]
 }
 
+const VideoPopup = ({ isOpen, onClose, videoId }: { isOpen: boolean; onClose: () => void; videoId: string }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative w-full max-w-4xl mx-4">
+        <button
+          onClick={onClose}
+          className="absolute -top-10 right-0 text-white hover:text-red-500 transition-colors"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <div className="relative pt-[56.25%]">
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function ReservationForm({ showExtras = true }: { showExtras?: boolean }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -220,6 +218,9 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
     currency: 'USD',
     price: 0
   })
+
+  const currentLang = pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'
+  const availableRoutes = currentLang === 'de' ? routes : routes
 
   // Ortak input stilleri
   const inputClasses = "w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-gray-500 hover:border-gray-600 transition-colors appearance-none"
@@ -276,19 +277,16 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
     }
   ]
 
-  // Güzergah seçildiğinde fiyatı güncelle
   const findRoutePrice = (from: string, to: string): number => {
-    const route = routes.find(r => r.from.toLowerCase() === from.toLowerCase() && r.to.toLowerCase() === to.toLowerCase());
+    const route = availableRoutes.find(r => r.from.toLowerCase() === from.toLowerCase() && r.to.toLowerCase() === to.toLowerCase());
     
     if (!route && from && to) {
-      // Güzergah listede yoksa -1 döndür (özel durum için)
       return -1;
     }
     
     return route ? route.price : 0;
   };
 
-  // Form değişikliklerini takip et ve fiyatı güncelle
   useEffect(() => {
     if (step1Data.pickupLocation && step1Data.dropoffLocation) {
       const price = findRoutePrice(step1Data.pickupLocation, step1Data.dropoffLocation);
@@ -296,67 +294,91 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
     }
   }, [step1Data.pickupLocation, step1Data.dropoffLocation]);
 
-  // Form gönderildiğinde
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (step1Data.price === -1) {
-      // Listede olmayan güzergah için WhatsApp'a yönlendir
       window.location.href = `https://wa.me/+905528988899?text=Merhaba,%20${step1Data.pickupLocation}%20-%20${step1Data.dropoffLocation}%20güzergahı%20için%20fiyat%20bilgisi%20alabilir%20miyim?`;
     } else if (step1Data.price > 0) {
       localStorage.setItem('reservationStep1', JSON.stringify(step1Data));
       
-      // URL'den dil kodunu al
-      let lang = '';
-      if (pathname.startsWith('/en/')) lang = 'en';
-      else if (pathname.startsWith('/de/')) lang = 'de';
-      else if (pathname.startsWith('/ru/')) lang = 'ru';
+      // Dil kontrolü ve yönlendirme
+      const path = window.location.pathname;
+      let langCode = '';
+      let routePath = 'reservation';
       
-      // Dil koduna göre yönlendirme yap
-      if (lang) {
-        const route = lang === 'en' ? 'reservation' : lang === 'de' ? 'reservierung' : 'rezervatsiya';
-        router.push(`/${lang}/${route}/step2`);
-      } else {
-        router.push('/reservation/step2');
+      if (path.startsWith('/en/')) {
+        langCode = 'en';
+        routePath = 'reservation';
+      } else if (path.startsWith('/de/')) {
+        langCode = 'de';
+        routePath = 'reservierung';
+      } else if (path.startsWith('/ru/')) {
+        langCode = 'ru';
+        routePath = 'rezervatsiya';
+      } else if (path.startsWith('/tr/') || path.includes('/rezervasyon/')) {
+        routePath = 'reservation';
       }
+
+      const redirectPath = langCode ? `/${langCode}/${routePath}/step2` : `/${routePath}/step2`;
+      window.location.href = redirectPath;
     }
   };
 
-  // handleRouteSelect fonksiyonunu useCallback ile sarmalayalım
-  const handleRouteSelect = useCallback((from: string, to: string, price: number) => {
-    const newStep1Data = {
+  const handleRouteSelect = (from: string, to: string, price: number) => {
+    const selectedRoute = availableRoutes.find(route => route.from === from && route.to === to);
+    const finalPrice = currentLang === 'de' && selectedRoute?.euroPrice 
+      ? selectedRoute.euroPrice 
+      : price;
+    
+    setStep1Data({
       ...step1Data,
       pickupLocation: from,
       dropoffLocation: to,
-      price: price
-    };
-    
-    setStep1Data(newStep1Data);
-    localStorage.setItem('reservationStep1', JSON.stringify(newStep1Data));
-    
-    // URL'den dil kodunu al
-    let lang = '';
-    if (pathname.startsWith('/en/')) lang = 'en';
-    else if (pathname.startsWith('/de/')) lang = 'de';
-    else if (pathname.startsWith('/ru/')) lang = 'ru';
-    
-    // Dil koduna göre yönlendirme yap
-    if (lang) {
-      const route = lang === 'en' ? 'reservation' : lang === 'de' ? 'reservierung' : 'rezervatsiya';
-      router.push(`/${lang}/${route}/step2`);
-    } else {
-      router.push('/reservation/step2');
-    }
-  }, [step1Data, pathname, router]);
+      price: finalPrice,
+      currency: currentLang === 'de' ? 'EUR' : 'USD'
+    });
+  };
 
   const [extras, setExtras] = useState({
     facebook: false
   });
 
+  const handleNext = (data: any) => {
+    setStep1Data(prev => ({
+      ...prev,
+      from: data.from,
+      to: data.to,
+      price: data.price,
+      currency: data.currency
+    }));
+    
+    // Dil kontrolü ve yönlendirme
+    const path = window.location.pathname;
+    let langCode = '';
+    let routePath = 'reservation';
+    
+    if (path.startsWith('/en/')) {
+      langCode = 'en';
+      routePath = 'reservation';
+    } else if (path.startsWith('/de/')) {
+      langCode = 'de';
+      routePath = 'reservierung';
+    } else if (path.startsWith('/ru/')) {
+      langCode = 'ru';
+      routePath = 'rezervatsiya';
+    } else if (path.startsWith('/tr/')) {
+      langCode = 'tr';
+      routePath = 'reservation';
+    }
+
+    const redirectPath = langCode ? `/${langCode}/${routePath}/step2` : '/reservation/step2';
+    router.push(redirectPath);
+  };
+
   return (
-    <div className="mt-4">
-      {/* Mobil Tasarım */}
+    <div className="w-full max-w-4xl mx-auto">
       <div className="md:hidden">
-        {/* Rezervasyon Formu */}
         <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-4 relative z-10 mx-auto max-w-5xl w-full border border-gray-800">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 gap-3">
@@ -494,9 +516,7 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
         </div>
       </div>
 
-      {/* Masaüstü Tasarım */}
       <div className="hidden md:block">
-        {/* Rezervasyon Formu */}
         <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 relative z-10 mx-auto max-w-5xl w-full border border-gray-800">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-4 gap-4">
@@ -636,55 +656,92 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
 
       {showExtras && (
         <>
-          {/* Video Section */}
           <div className="mt-6">
             <h3 className="text-lg font-semibold text-center mb-3">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].whoWeAre}</h3>
             <div className="grid grid-cols-2 gap-3 max-w-3xl mx-auto">
-              <div className="aspect-square">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src="https://www.youtube.com/embed/your-video-id-1"
-                  title="Start Holiday VIP Transfer Video 1"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+              <div className="group cursor-pointer" onClick={() => setSelectedVideo('oIHdAPHF4NI')}>
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-800">
+                  <img
+                    src="/images/transfer-service.jpg"
+                    alt="Transfer Service"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="mt-3 text-lg font-medium text-white text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video1Title}</h3>
+                <p className="mt-1 text-sm text-gray-400 text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video1Description}</p>
               </div>
-              <div className="aspect-square">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src="https://www.youtube.com/embed/your-video-id-2"
-                  title="Start Holiday VIP Transfer Video 2"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+
+              <div className="group cursor-pointer" onClick={() => setSelectedVideo('JsCaQfTWEdw')}>
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-800">
+                  <img
+                    src="/images/luxury-fleet.jpg"
+                    alt="Luxury Fleet"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="mt-3 text-lg font-medium text-white text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video2Title}</h3>
+                <p className="mt-1 text-sm text-gray-400 text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video2Description}</p>
               </div>
-              <div className="aspect-square">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src="https://www.youtube.com/embed/your-video-id-3"
-                  title="Start Holiday VIP Transfer Video 3"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+
+              <div className="group cursor-pointer" onClick={() => setSelectedVideo('_OCMbMM0BmE')}>
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-800">
+                  <img
+                    src="/images/professional-drivers.jpg"
+                    alt="Professional Drivers"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="mt-3 text-lg font-medium text-white text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video3Title}</h3>
+                <p className="mt-1 text-sm text-gray-400 text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video3Description}</p>
               </div>
-              <div className="aspect-square">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src="https://www.youtube.com/embed/your-video-id-4"
-                  title="Start Holiday VIP Transfer Video 4"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+
+              <div className="group cursor-pointer" onClick={() => setSelectedVideo('jn5KzJoEmvs')}>
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-800">
+                  <img
+                    src="/images/customer-satisfaction.jpg"
+                    alt="Customer Satisfaction"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="mt-3 text-lg font-medium text-white text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video4Title}</h3>
+                <p className="mt-1 text-sm text-gray-400 text-center">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].video4Description}</p>
               </div>
             </div>
           </div>
 
-          {/* Sosyal Medya */}
           <div className="mt-12">
             <h3 className="text-2xl font-semibold text-white text-center mb-6">{translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].socialMedia}</h3>
             <div className="flex gap-2">
               <a
-                href="https://www.instagram.com/antalia_transfer/"
+                href="https://www.instagram.com/startholidaytransfer/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-20 md:h-40 w-full bg-black/80 backdrop-blur-sm rounded-xl p-2 md:p-4 flex items-center justify-center hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.01] cursor-pointer border border-gray-800 hover:border-red-500"
@@ -692,7 +749,7 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
                 <img src="/instagram.png" alt="Instagram" className="h-12 md:h-28 w-auto object-contain" />
               </a>
               <a
-                href="https://www.facebook.com/share/1E1ibqFgR6/?mibextid=wwXIfr"
+                href="https://www.facebook.com/startholidaytransfer/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-20 md:h-40 w-full bg-black/80 backdrop-blur-sm rounded-xl p-2 md:p-4 flex items-center justify-center hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.01] cursor-pointer border border-gray-800 hover:border-red-500"
@@ -702,7 +759,6 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
             </div>
           </div>
 
-          {/* Duyuru Kutusu */}
           <div className="mt-12 bg-black backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800">
             <h2 className="text-2xl font-bold text-white mb-4 text-center">
               {translations[pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr'].announcement.title}
@@ -728,33 +784,16 @@ export default function ReservationForm({ showExtras = true }: { showExtras?: bo
         </>
       )}
 
-      {/* Fiyat Listesi - Her zaman görünür */}
-      <PriceList onRouteSelect={handleRouteSelect} />
+      <PriceList 
+        onRouteSelect={handleRouteSelect} 
+        onNext={handleNext}
+      />
 
-      {/* Video Modal */}
-      {isModalOpen && selectedVideo && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="relative w-full h-auto max-h-[80vh] max-w-[95vw] md:max-w-[80vw]">
-            <div className="w-full h-full md:aspect-video">
-              <iframe
-                src={selectedVideo}
-                className="w-full h-[50vh] md:h-full rounded-lg"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <button
-              onClick={() => {
-                setIsModalOpen(false)
-                setSelectedVideo(null)
-              }}
-              className="absolute -top-8 right-2 md:-right-8 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
+      <VideoPopup
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        videoId={selectedVideo || ''}
+      />
     </div>
   )
 } 

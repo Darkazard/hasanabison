@@ -12,11 +12,46 @@ import 'swiper/css/effect-fade'
 import ReservationForm from '@/components/Reservation/ReservationForm'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import LanguageSelector from '@/components/LanguageSelector'
+import { usePathname } from 'next/navigation'
+import { translations } from '@/translations'
+
+// Video Popup Component
+const VideoPopup = ({ isOpen, onClose, videoId }: { isOpen: boolean; onClose: () => void; videoId: string }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative w-full max-w-4xl mx-4">
+        <button
+          onClick={onClose}
+          className="absolute -top-10 right-0 text-white hover:text-red-500 transition-colors"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <div className="relative pt-[56.25%]">
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const swiperRef = useRef<SwiperType>();
+  const pathname = usePathname();
+  const currentLang = pathname?.startsWith('/en/') ? 'en' : pathname?.startsWith('/de/') ? 'de' : pathname?.startsWith('/ru/') ? 'ru' : 'tr';
 
   // Menü açıldığında sayfa scrollunu engelle
   useEffect(() => {
@@ -190,50 +225,41 @@ export default function HomePage() {
           <div className="mt-8">
             <ReservationForm showExtras={true} />
           </div>
-        </div>
-      </main>
 
-      {/* About Us Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-black backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-800 p-8 mb-20">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">Hakkımızda</h2>
-          <div className="prose prose-lg prose-invert mx-auto">
-            <div className="text-white space-y-6">
-              <p>
-                2013 yılından bu yana, Start Holiday VIP Transfer olarak Antalya'da lüks ve konforlu ulaşım hizmetleri sunuyoruz. Her geçen yıl, değerli misafirlerimizden aldığımız geri bildirimler ve profesyonel ekibimizin özverili çalışmaları sayesinde hizmet kalitemizi daha da kusursuz hale getiriyoruz.
-              </p>
-              
-              <p>
-                Misafirlerimize sadece bir transfer hizmeti sunmuyor, aynı zamanda unutulmaz bir seyahat deneyimi yaşatmayı hedefliyoruz. VIP minibüslerimizle sunduğumuz özel hizmetler arasında:
-              </p>
-              
-              <ul className="list-disc pl-6 space-y-2">
-                <li>Havalimanı - Otel Transferleri: Konforlu ve güvenli bir şekilde gideceğiniz noktaya ulaştırıyoruz.</li>
-                <li>Alışveriş Turları: Antalya'nın en prestijli alışveriş merkezlerine Mall of Antalya, Terracity, Mark Antalya vb... özel VIP ulaşım sağlıyoruz.</li>
-                <li>Antalya city, Kemer, Side, Manavgat, Alanya, Dimçayı, Kaş, Fethiye, Ölüdeniz, Saklıkent Fethiye: Antalya ve çevresinin doğal ve tarihi güzelliklerini keşfetmek isteyen misafirlerimize özel rotalar sunuyoruz.</li>
-                <li>St. Nicholas Kilisesi Ziyareti: Demre'de bulunan, Noel Baba olduğuna inanılan Aziz Nikolaos'ın ölümü ile yapılan kilise. Noel Baba'nın ölümünden sonra bir süre burada yattığı daha sonra kemiklerinin İtalyan denizcilerce Bari'ye götürüldüğüne inanılır.</li>
-              </ul>
+          {/* About Us Section */}
+          <div className="container mx-auto px-4 py-16">
+            <div className="bg-black backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-800 p-8 mb-20">
+              <h2 className="text-3xl font-bold text-white mb-8 text-center">Hakkımızda</h2>
+              <div className="prose prose-lg prose-invert mx-auto">
+                <div className="text-white space-y-6">
+                  <p>
+                    2013 yılından bu yana, Start Holiday VIP Transfer olarak Antalya'da lüks ve konforlu ulaşım hizmetleri sunuyoruz. Her geçen yıl, değerli misafirlerimizden aldığımız geri bildirimler ve profesyonel ekibimizin özverili çalışmaları sayesinde hizmet kalitemizi daha da kusursuz hale getiriyoruz.
+                  </p>
+                  
+                  <p>
+                    Misafirlerimize sadece bir transfer hizmeti sunmuyor, aynı zamanda unutulmaz bir seyahat deneyimi yaşatmayı hedefliyoruz. VIP minibüslerimizle sunduğumuz özel hizmetler arasında:
+                  </p>
+                  
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Havalimanı - Otel Transferleri: Konforlu ve güvenli bir şekilde gideceğiniz noktaya ulaştırıyoruz.</li>
+                    <li>Alışveriş Turları: Antalya'nın en prestijli alışveriş merkezlerine Mall of Antalya, Terracity, Mark Antalya vb... özel VIP ulaşım sağlıyoruz.</li>
+                    <li>Antalya city, Kemer, Side, Manavgat, Alanya, Dimçayı, Kaş, Fethiye, Ölüdeniz, Saklıkent Fethiye: Antalya ve çevresinin doğal ve tarihi güzelliklerini keşfetmek isteyen misafirlerimize özel rotalar sunuyoruz.</li>
+                    <li>St. Nicholas Kilisesi Ziyareti: Demre'de bulunan, Noel Baba olduğuna inanılan Aziz Nikolaos'ın ölümü ile yapılan kilise. Noel Baba'nın ölümünden sonra bir süre burada yattığı daha sonra kemiklerinin İtalyan denizcilerce Bari'ye götürüldüğüne inanılır.</li>
+                  </ul>
 
-              <p>
-                <strong className="text-white">Özel VIP Geziler:</strong> Kendi programınızı oluşturabilir, profesyonel sürücülerimiz eşliğinde size özel bir deneyim yaşayabilirsiniz.
-              </p>
+                  <p>
+                    <strong className="text-white">Özel VIP Geziler:</strong> Kendi programınızı oluşturabilir, profesyonel sürücülerimiz eşliğinde size özel bir deneyim yaşayabilirsiniz.
+                  </p>
 
-              <p className="text-xl font-semibold text-white text-center mt-8">
-                Lüks, konfor ve güveni bir arada sunan hizmetlerimizle, Antalya'da unutulmaz bir yolculuk için buradayız!
-              </p>
+                  <p className="text-xl font-semibold text-white text-center mt-8">
+                    Lüks, konfor ve güveni bir arada sunan hizmetlerimizle, Antalya'da unutulmaz bir yolculuk için buradayız!
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-black/80 backdrop-blur-sm py-8">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-gray-400">
-            <p>&copy; 2024 Holiday Transfer. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
+      </main>
     </div>
   )
 } 

@@ -3,12 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ClientLayout from "@/components/ClientLayout";
+import { TripTypeProvider } from '@/contexts/TripTypeContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Holiday Transfer - Antalya Transfer Services",
-  description: "The most reliable and comfortable transfer services in Antalya",
+  title: "Star Holiday Transfer",
+  description: "Star Holiday Transfer - Airport Transfer Service",
   alternates: {
     canonical: "https://holidaytransfer.com",
     languages: {
@@ -40,9 +41,13 @@ export default function RootLayout({
         <link rel="alternate" href="https://holidaytransfer.com" hrefLang="x-default" />
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
-        <LanguageProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </LanguageProvider>
+        <TripTypeProvider>
+          <LanguageProvider>
+            <main className="min-h-screen bg-black">
+              <ClientLayout>{children}</ClientLayout>
+            </main>
+          </LanguageProvider>
+        </TripTypeProvider>
       </body>
     </html>
   );

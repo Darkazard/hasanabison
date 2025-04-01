@@ -20,6 +20,8 @@ interface Step2Data {
   transferPrice: number
   selectedExtras: { name: string; price: number }[]
   totalPrice: number
+  vehicleImage: string
+  tripType: string
 }
 
 interface PersonalInfo {
@@ -31,6 +33,16 @@ interface PersonalInfo {
   meetingTime: string
   pickupAddress: string
   dropoffAddress: string
+  returnDate: string
+  returnTime: string
+}
+
+interface PriceCalculation {
+  basePrice: number
+  vehiclePrice: number
+  extrasTotal: number
+  totalPrice: number
+  isRoundTrip: boolean
 }
 
 export default function Step3Page() {
@@ -46,7 +58,9 @@ export default function Step3Page() {
     meetingDate: '',
     meetingTime: '',
     pickupAddress: '',
-    dropoffAddress: ''
+    dropoffAddress: '',
+    returnDate: '',
+    returnTime: ''
   })
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
@@ -62,12 +76,41 @@ export default function Step3Page() {
     setLoading(false)
   }, [])
 
+  const calculatePrices = (): PriceCalculation => {
+    if (!step1Data || !step2Data) return {
+      basePrice: 0,
+      vehiclePrice: 0,
+      extrasTotal: 0,
+      totalPrice: 0,
+      isRoundTrip: false
+    };
+
+    // Extra services total price
+    const extrasTotal = step2Data.selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+    
+    // Round trip check
+    const isRoundTrip = step2Data.tripType === 'round-trip';
+    
+    // Total price calculation (route price subtracted)
+    const totalPrice = step2Data.totalPrice - step1Data.price;
+    
+    return {
+      basePrice: step1Data.price,
+      vehiclePrice: step2Data.vehiclePrice,
+      extrasTotal,
+      totalPrice,
+      isRoundTrip
+    };
+  };
+
+  const prices = calculatePrices();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!step1Data || !step2Data) return;
 
-    // Form validasyonu
+    // Form validation
     const newErrors: Record<string, boolean> = {}
 
     if (!personalInfo.firstName) newErrors.firstName = true
@@ -76,42 +119,48 @@ export default function Step3Page() {
     if (!personalInfo.meetingTime) newErrors.meetingTime = true
     if (!personalInfo.pickupAddress) newErrors.pickupAddress = true
     if (!personalInfo.dropoffAddress) newErrors.dropoffAddress = true
+    if (prices.isRoundTrip) {
+      if (!personalInfo.returnDate) newErrors.returnDate = true
+      if (!personalInfo.returnTime) newErrors.returnTime = true
+    }
 
     setErrors(newErrors)
 
-    // Hata yoksa devam et
+    // Continue if no errors
     if (Object.keys(newErrors).length === 0) {
-      const message = `*Новое бронирование трансфера*%0A
-----------------------------------------%0A
-*Личная информация*%0A
-Имя: ${personalInfo.firstName}%0A
-Фамилия: ${personalInfo.lastName}%0A
-Телефон: ${personalInfo.phone || 'Не указан'}%0A
-----------------------------------------%0A
-*Информация о рейсе*%0A
-Дата прилета: ${personalInfo.meetingDate}%0A
-Время прилета: ${personalInfo.meetingTime}%0A
-Номер рейса: ${personalInfo.pickupAddress}%0A
-Направление: ${personalInfo.dropoffAddress}%0A
-----------------------------------------%0A
-*Детали трансфера*%0A
-Откуда: ${step1Data.pickupLocation}%0A
-Куда: ${step1Data.dropoffLocation}%0A
-Пассажиры: ${step1Data.adults + step1Data.children} человек%0A
-Стоимость трансфера: ${step2Data.transferPrice}$%0A
-----------------------------------------%0A
-*Выбранное транспортное средство*%0A
-${step2Data.vehicleName}%0A
-Стоимость транспортного средства: ${step2Data.vehiclePrice}$%0A
-${step2Data.selectedExtras.length > 0 ? `
-*Выбранные дополнительные услуги*%0A${step2Data.selectedExtras.map(extra => `${extra.name}: ${extra.price}$`).join('%0A')}%0A` : ''}
-----------------------------------------%0A
-*Общая стоимость: ${step2Data.totalPrice}$*%0A
-----------------------------------------%0A
-*Примечания*%0A
-${personalInfo.notes || 'Нет примечаний'}%0A`
+      const message = `🚗 Бронирование трансфера
 
-      const whatsappUrl = `https://wa.me/905528988899?text=${message}`
+👤 Личная информация:
+Имя Фамилия: ${personalInfo.firstName} ${personalInfo.lastName}
+Телефон: ${personalInfo.phone || 'Не указан'}
+Примечание: ${personalInfo.notes || 'Нет примечаний'}
+Количество человек: ${step1Data?.adults ?? 0} + ${step1Data?.children ?? 0}
+
+✈️ Информация о трансфере:
+${prices.isRoundTrip ? '🔄 Трансфер туда и обратно' : '➡️ Трансфер в одну сторону'}
+Дата прилета: ${personalInfo.meetingDate}
+Время прилета: ${personalInfo.meetingTime}
+Номер рейса: ${personalInfo.pickupAddress}
+Назначение: ${personalInfo.dropoffAddress}
+${prices.isRoundTrip ? `Дата вылета: ${personalInfo.returnDate}
+Время вылета: ${personalInfo.returnTime}` : ''}
+
+💰 Детали цены:
+Стоимость маршрута: $${prices.basePrice}
+Стоимость транспортного средства: $${prices.vehiclePrice}
+${prices.isRoundTrip ? 'Скидка на туда и обратно: -$5\n' : ''}
+
+🚘 Выбранное транспортное средство: ${step2Data?.vehicleName ?? ''}
+
+${step2Data?.selectedExtras.length > 0 ? `
+🎁 Выбранные дополнительные услуги:
+${step2Data.selectedExtras.map(extra => `- ${extra.name}: $${extra.price}`).join('\n')}
+Итого за дополнительные услуги: $${prices.extrasTotal}
+` : ''}
+
+💵 Общая сумма: $${prices.totalPrice}`
+
+      const whatsappUrl = `https://wa.me/905528988899?text=${encodeURIComponent(message)}`
 
       localStorage.removeItem('reservationStep1')
       localStorage.removeItem('reservationStep2')
@@ -241,7 +290,7 @@ ${personalInfo.notes || 'Нет примечаний'}%0A`
                         value={personalInfo.pickupAddress}
                         onChange={(e) => setPersonalInfo({...personalInfo, pickupAddress: e.target.value})}
                         className={`${inputClasses} pl-10 ${errors.pickupAddress ? errorClasses : ''}`}
-                        placeholder="EX: QX0707"
+                        placeholder="Пример: QX0707"
                       />
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                         <i className="fas fa-plane"></i>
@@ -267,108 +316,141 @@ ${personalInfo.notes || 'Нет примечаний'}%0A`
                     </div>
                     {errors.dropoffAddress && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
                   </div>
+                  {prices.isRoundTrip && (
+                    <>
+                      <div>
+                        <label className={labelClasses}>
+                          {t.returnDate} <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            value={personalInfo.returnDate}
+                            onChange={(e) => setPersonalInfo({...personalInfo, returnDate: e.target.value})}
+                            className={`${inputClasses} pl-10 ${errors.returnDate ? errorClasses : ''}`}
+                          />
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i className="fas fa-calendar"></i>
+                          </span>
+                        </div>
+                        {errors.returnDate && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
+                      </div>
+                      <div>
+                        <label className={labelClasses}>
+                          {t.returnTime} <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="time"
+                            value={personalInfo.returnTime}
+                            onChange={(e) => setPersonalInfo({...personalInfo, returnTime: e.target.value})}
+                            className={`${inputClasses} pl-10 ${errors.returnTime ? errorClasses : ''}`}
+                          />
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i className="fas fa-clock"></i>
+                          </span>
+                        </div>
+                        {errors.returnTime && <p className="text-red-500 text-sm mt-1">{t.requiredField}</p>}
+                      </div>
+                    </>
+                  )}
                 </form>
               </div>
             </div>
 
-            {/* Reservation Summary */}
+            {/* Vehicle Details and Price Summary */}
             <div className="md:col-span-1">
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800">
-                <h2 className="text-2xl font-bold mb-6 text-white">{t.reservationSummary}</h2>
+              {/* Vehicle Details */}
+              <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800 mb-6">
+                <h2 className="text-2xl font-bold mb-6 text-white">{t.selectedVehicle}</h2>
                 
                 {/* Vehicle Image */}
                 <div className="mb-6">
                   <img
-                    src="/images/vehicles/vito.jpg"
+                    src={step2Data?.vehicleImage || '/images/vehicles/vito.jpg'}
                     alt={step2Data?.vehicleName}
                     className="w-full h-48 object-cover rounded-lg"
                   />
                 </div>
 
                 {/* Vehicle Details */}
-                <div className="space-y-4 mb-6">
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">
-                      <i className="fas fa-car"></i>
-                    </span>
-                    <span className="ml-2 text-white">{step2Data?.vehicleName}</span>
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-300">
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span className="ml-2 font-medium">{step2Data?.vehicleName}</span>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">
-                      <i className="fas fa-map-marker-alt"></i>
-                    </span>
-                    <span className="ml-2 text-white">{step1Data?.pickupLocation}</span>
+                  <div className="flex items-center text-gray-300">
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="ml-2">{step1Data?.pickupLocation} → {step1Data?.dropoffLocation}</span>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">
-                      <i className="fas fa-map-marker-alt"></i>
-                    </span>
-                    <span className="ml-2 text-white">{step1Data?.dropoffLocation}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">
-                      <i className="fas fa-users"></i>
-                    </span>
-                    <span className="ml-2 text-white">{step1Data?.adults + step1Data?.children} {t.passengers}</span>
+                  <div className="flex items-center text-gray-300">
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span className="ml-2">{step1Data?.adults + step1Data?.children} {t.passengers}</span>
                   </div>
                 </div>
+              </div>
 
-                {/* Price Summary */}
-                <div className="border-t border-gray-800 pt-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-400">{t.oneWayTransfer}</span>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">{t.transferPrice}</p>
-                      <p className="text-lg font-semibold text-red-500">${step2Data?.transferPrice}</p>
-                    </div>
+              {/* Price Summary */}
+              <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800">
+                <h2 className="text-2xl font-bold mb-6 text-white">{t.priceSummary}</h2>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-gray-300">
+                    <span>{t.routePrice}:</span>
+                    <span className="font-medium">${prices.basePrice}</span>
                   </div>
-                  {step2Data?.selectedExtras.length > 0 && (
-                    <div className="mb-2">
-                      <span className="text-gray-400">{t.extras}:</span>
-                      {step2Data.selectedExtras.map((extra, idx) => (
-                        <div key={idx} className="flex justify-between items-center mt-1">
-                          <span className="text-gray-400">{extra.name}</span>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-400">{t.extraServicePrice}</p>
-                            <p className="text-lg font-semibold text-red-500">${extra.price}</p>
-                          </div>
-                        </div>
-                      ))}
+                  <div className="flex justify-between items-center text-gray-300">
+                    <span>{t.vehiclePrice}:</span>
+                    <span className="font-medium">${prices.vehiclePrice}</span>
+                  </div>
+                  {prices.isRoundTrip && (
+                    <div className="flex justify-between items-center text-green-400">
+                      <span>{t.roundTripDiscount}:</span>
+                      <span className="font-medium">-$5</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-800">
-                    <span className="text-lg font-semibold text-white">{t.totalPrice}:</span>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">{t.vehiclePrice}</p>
-                      <p className="text-lg font-semibold text-red-500">${step2Data?.vehiclePrice}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">{t.totalPrice}</p>
-                      <p className="text-lg font-semibold text-red-500">${step2Data?.totalPrice}</p>
+                  {prices.extrasTotal > 0 && (
+                    <>
+                      <div className="pt-2 border-t border-gray-700">
+                        <div className="text-sm font-medium text-gray-400 mb-2">{t.selectedExtras}:</div>
+                        {step2Data?.selectedExtras.map((extra, idx) => (
+                          <div key={idx} className="flex justify-between items-center text-gray-300 text-sm">
+                            <span>{extra.name}</span>
+                            <span>+${extra.price}</span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between items-center text-gray-300 mt-2 pt-2 border-t border-gray-700">
+                          <span>{t.extrasTotal}:</span>
+                          <span className="font-medium">+${prices.extrasTotal}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div className="pt-4 mt-4 border-t-2 border-gray-700">
+                    <div className="flex justify-between items-center text-xl">
+                      <span className="font-bold text-white">{t.totalPrice}:</span>
+                      <span className="font-bold text-red-500">${prices.totalPrice}</span>
                     </div>
                   </div>
-                </div>
-
-                {/* Terms and Complete Button */}
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-start">
-                    <input
-                      type="checkbox"
-                      className="mt-1"
-                    />
-                    <label className="ml-2 text-sm text-gray-400">
-                      {t.termsAndConditions}
-                    </label>
-                  </div>
-                  <button
-                    onClick={handleSubmit}
-                    className="w-full bg-yellow-500 text-black py-3 rounded-lg hover:bg-yellow-600 transition-colors font-medium"
-                  >
-                    {t.payCashInVehicle}
-                  </button>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={handleSubmit}
+              className="w-full mt-6 bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-500/25"
+            >
+              {t.bookWithWhatsApp}
+            </button>
           </div>
         </div>
       </div>
