@@ -17,7 +17,7 @@ interface Step1Data {
 
 export default function Step2Page() {
   const router = useRouter()
-  const t = translations.ru
+  const t = translations.tr
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null)
   const [loading, setLoading] = useState(true)
   const [tripType, setTripType] = useState<'one-way' | 'round-trip'>('one-way')
@@ -59,7 +59,7 @@ export default function Step2Page() {
         tripType: data.tripType
       };
       localStorage.setItem('reservationStep2', JSON.stringify(step2Data));
-      router.push('/ru/rezervatsiya/step3');
+      router.push('/tr/rezervasyon/step3');
     }
   };
 
@@ -83,7 +83,7 @@ export default function Step2Page() {
   }
 
   if (!step1Data) {
-    router.push('/ru/rezervatsiya')
+    router.push('/tr/rezervasyon')
     return null
   }
 

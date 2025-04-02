@@ -69,9 +69,9 @@ export default function Step2Page() {
     }
   };
 
-  const handleTripTypeChange = (tripType: 'one-way' | 'round-trip') => {
+  const handleTripTypeChange = (vehicleId: number, type: 'one-way' | 'round-trip') => {
     if (step1Data) {
-      setStep1Data({ ...step1Data, tripType });
+      setStep1Data({ ...step1Data, tripType: type });
     }
   };
 

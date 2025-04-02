@@ -65,6 +65,9 @@ export default function Step2Page() {
 
   const handleTripTypeChange = (vehicleId: number, type: 'one-way' | 'round-trip') => {
     setTripType(type);
+    if (step1Data) {
+      setStep1Data({ ...step1Data, tripType: type });
+    }
   };
 
   if (loading) {
