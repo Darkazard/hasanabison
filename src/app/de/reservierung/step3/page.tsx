@@ -37,6 +37,11 @@ interface PersonalInfo {
   returnTime: string
 }
 
+// CSS classes for form elements
+const labelClasses = 'block text-sm font-medium text-gray-300 mb-1'
+const inputClasses = 'w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent'
+const errorClasses = 'border-red-500 focus:ring-red-500'
+
 export default function Step3Page() {
   const router = useRouter()
   const t = translations.de
@@ -67,6 +72,10 @@ export default function Step3Page() {
     }
     setLoading(false)
   }, [])
+
+  const handleBack = () => {
+    router.push('/de/reservierung/step2')
+  }
 
   const calculatePrices = () => {
     if (!step1Data || !step2Data) return {
@@ -185,14 +194,27 @@ Zusatzleistungen Gesamt: $${prices.extrasTotal}
     return null
   }
 
-  const inputClasses = "w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500"
-  const labelClasses = "block text-sm font-medium text-gray-400 mb-1"
-  const errorClasses = "border-red-500"
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
+          <button
+            onClick={handleBack}
+            className="mb-6 text-gray-400 hover:text-white flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            {t.back}
+          </button>
+
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-white">{t.personalInfo}</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">{t.step3}</span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Personal Information */}
             <div className="md:col-span-1">

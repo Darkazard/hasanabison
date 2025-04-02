@@ -74,6 +74,8 @@ export const translations = {
     oneWay: 'One Way',
     selected: 'Selected',
     reservation: 'Reservation',
+    step2: 'Step 2',
+    step3: 'Step 3',
   },
   de: {
     personalInfo: 'Persönliche Informationen',
@@ -150,6 +152,8 @@ export const translations = {
     oneWay: 'Einweg',
     selected: 'Ausgewählt',
     reservation: 'Reservierung',
+    step2: 'Schritt 2',
+    step3: 'Schritt 3',
   },
   ru: {
     personalInfo: 'Личная информация',
@@ -226,6 +230,8 @@ export const translations = {
     oneWay: 'В одну сторону',
     selected: 'Выбрано',
     reservation: 'Бронирование',
+    step2: 'Шаг 2',
+    step3: 'Шаг 3',
   },
   tr: {
     personalInfo: 'Kişisel Bilgiler',
@@ -302,8 +308,8 @@ export const translations = {
     oneWay: 'Tek Yön',
     selected: 'Seçildi',
     reservation: 'Rezervasyon',
-    step2: "Adım 2",
-    step3: "Adım 3",
+    step2: 'Adım 2',
+    step3: 'Adım 3',
     selectVehicle: "Araç Seçin",
     enterName: "Adınızı girin",
     enterSurname: "Soyadınızı girin",

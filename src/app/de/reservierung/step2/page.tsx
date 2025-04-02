@@ -88,6 +88,15 @@ export default function Step2Page() {
     <div className="min-h-screen bg-black py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
+          <div className="max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] 2xl:max-w-[80vw] mx-auto py-8">
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-2xl font-bold">{t.selectedVehicle}</h1>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-400">{t.step2}</span>
+              </div>
+            </div>
+          </div>
+
           {/* Transfer Özeti */}
           <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800 mb-8">
             <div className="flex items-center justify-between space-x-4">

@@ -168,6 +168,13 @@ ${step2Data.selectedExtras.map(extra => `- ${extra.name}: $${extra.price}`).join
             {t.back}
           </button>
 
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-white">{t.personalInfo}</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">{t.step3}</span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Personal Information */}
             <div className="md:col-span-1">
