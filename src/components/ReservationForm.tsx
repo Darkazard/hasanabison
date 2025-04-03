@@ -270,7 +270,23 @@ const ReservationForm = () => {
     };
 
     localStorage.setItem('reservationStep1', JSON.stringify(step1Data));
-    router.push('/reservation/step2');
+    
+    // Dil koduna göre yönlendirme
+    let nextPath;
+    switch (currentLang) {
+      case 'de':
+        nextPath = '/de/reservierung/step2';
+        break;
+      case 'ru':
+        nextPath = '/ru/rezervatsiya/step2';
+        break;
+      case 'tr':
+        nextPath = '/tr/rezervasyon/step2';
+        break;
+      default:
+        nextPath = '/en/reservation/step2';
+    }
+    router.push(nextPath);
   };
 
   const PriceListComponent = () => {

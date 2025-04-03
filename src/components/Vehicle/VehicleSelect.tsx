@@ -976,6 +976,8 @@ const VehicleSelect = ({ onVehicleSelect, initialPrice, onTripTypeChange }: Vehi
       selectedExtras: selectedExtrasDetails,
       vehicleImage: vehicle.images[getCurrentImageIndex(vehicle.id)],
       tripType,
+      totalPrice: vehicleTotal,
+      transferPrice: initialPrice
     };
 
     localStorage.setItem('reservationStep2', JSON.stringify(step2Data));

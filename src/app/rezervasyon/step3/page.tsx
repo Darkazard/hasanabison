@@ -24,6 +24,8 @@ interface Step2Data {
   selectedExtras: { name: string; price: number }[]
   vehicleImage: string
   tripType: 'one-way' | 'round-trip'
+  totalPrice: number
+  transferPrice: number
 }
 
 interface PersonalInfo {
@@ -60,8 +62,11 @@ const Step3Page = () => {
     const savedStep2 = localStorage.getItem('reservationStep2')
     
     if (savedStep1 && savedStep2) {
-      setStep1Data(JSON.parse(savedStep1))
-      setStep2Data(JSON.parse(savedStep2))
+      const step1ParsedData = JSON.parse(savedStep1)
+      const step2ParsedData = JSON.parse(savedStep2)
+      console.log('Step2 Data:', step2ParsedData) // Debug için
+      setStep1Data(step1ParsedData)
+      setStep2Data(step2ParsedData)
     } else {
       router.push('/rezervasyon/step1')
     }
@@ -85,6 +90,11 @@ const Step3Page = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    if (!step1Data || !step2Data) {
+      router.push('/rezervasyon/step1')
+      return
+    }
+    
     const newErrors: Record<string, boolean> = {}
     if (!personalInfo.firstName) newErrors.firstName = true
     if (!personalInfo.lastName) newErrors.lastName = true
@@ -97,11 +107,40 @@ const Step3Page = () => {
     setErrors(newErrors)
 
     if (Object.keys(newErrors).length === 0) {
-      const step3Data = {
-        ...personalInfo
-      }
-      localStorage.setItem('reservationStep3', JSON.stringify(step3Data))
-      window.location.href = 'https://wa.me/+905444444444'
+      const message = `🚗 Yeni Transfer Rezervasyonu
+
+👤 Kişisel Bilgiler:
+Ad Soyad: ${personalInfo.firstName} ${personalInfo.lastName}
+Telefon: ${personalInfo.phone}
+
+✈️ Transfer Detayları:
+Nereden: ${step1Data.pickupLocation}
+Nereye: ${step1Data.dropoffLocation}
+Yolcu Sayısı: ${step1Data.adults} Yetişkin${step1Data.children > 0 ? `, ${step1Data.children} Çocuk` : ''}
+Transfer Tipi: ${step2Data.tripType === 'round-trip' ? 'Gidiş-Dönüş' : 'Tek Yön'}
+
+📅 Varış Bilgileri:
+Tarih: ${personalInfo.meetingDate}
+Saat: ${personalInfo.meetingTime}
+Uçuş No: ${personalInfo.flightNumber}
+Adres: ${personalInfo.pickupAddress}
+
+🚘 Seçilen Araç: ${step2Data.vehicleName}
+
+${step2Data.selectedExtras.length > 0 ? `
+🎁 Seçilen Ekstra Hizmetler:
+${step2Data.selectedExtras.map(extra => `- ${extra.name}: ${extra.price}₺`).join('\n')}
+` : ''}
+
+💵 Toplam Tutar: ${step2Data.totalPrice}₺`
+
+      const whatsappUrl = `https://wa.me/905528988899?text=${encodeURIComponent(message)}`
+
+      localStorage.removeItem('reservationStep1')
+      localStorage.removeItem('reservationStep2')
+
+      window.open(whatsappUrl, '_blank')
+      router.push('/')
     }
   }
 
@@ -296,16 +335,24 @@ const Step3Page = () => {
                 </div>
               </div>
 
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800">
+              <div className="bg-black/80 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-gray-800 mb-8">
                 <h2 className="text-2xl font-bold mb-6 text-white">Fiyat Özeti</h2>
                 <div className="space-y-4">
                   <div className="flex justify-between text-gray-300">
-                    <span>Transfer Ücreti</span>
-                    <span>₺{step2Data.vehiclePrice}</span>
+                    <span>Transfer Ücreti:</span>
+                    <span>{step2Data.transferPrice}₺</span>
                   </div>
+                  {step2Data.selectedExtras && step2Data.selectedExtras.length > 0 && (
+                    <div className="flex justify-between text-gray-300">
+                      <span>Ekstra Hizmetler:</span>
+                      <span>
+                        {step2Data.selectedExtras.reduce((sum, extra) => sum + extra.price, 0)}₺
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-2xl font-bold mt-4">
-                    <span className="text-white">Toplam</span>
-                    <span className="text-red-500">₺{step2Data.vehiclePrice}</span>
+                    <span className="text-white">Toplam:</span>
+                    <span className="text-red-500">{step2Data.totalPrice}₺</span>
                   </div>
                 </div>
               </div>
